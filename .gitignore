@@ -2,3 +2,4 @@
 /src/windows/Microsoft.Toolkit.Uwp.Notifications.*
 /src/windows/**/.vs
 /src/windows/**/bin
+/src/windows/**/obj
