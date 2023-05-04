@@ -1,2 +1,3 @@
 /src/windows.old
 /src/windows/Microsoft.Toolkit.Uwp.Notifications.*
+/src/windows/**/.vs
