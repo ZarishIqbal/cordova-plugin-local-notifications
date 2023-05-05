@@ -295,3 +295,58 @@ exports.getType = function (id, callback, scope) {
 exports.getIds = function (callback, scope) {
     this._exec('ids', 0, callback, scope);
 };
+
+/**
+ * List of all scheduled notification IDs.
+ *
+ * @param [ Function ] callback The function to be exec as the callback.
+ * @param [ Object ]   scope    The callback function's scope.
+ *
+ * @return [ Void ]
+ */
+exports.getScheduledIds = function (callback, scope) {
+    this._exec('ids', 1, callback, scope);
+};
+
+/**
+ * List of all triggered notification IDs.
+ *
+ * @param [ Function ] callback The function to be exec as the callback.
+ * @param [ Object ]   scope    The callback function's scope.
+ *
+ * @return [ Void ]
+ */
+exports.getTriggeredIds = function (callback, scope) {
+    this._exec('ids', 2, callback, scope);
+};
+
+/**
+ * List of local notifications specified by id.
+ * If called without IDs, all notification will be returned.
+ *
+ * @param [ Array<Int> ] ids      The IDs of the notifications.
+ * @param [ Function ]   callback The function to be exec as the callback.
+ * @param [ Object ]     scope    The callback function's scope.
+ *
+ * @return [ Void ]
+ */
+exports.get = function () {
+    var args = Array.apply(null, arguments);
+
+    if (typeof args[0] == 'function') {
+        args.unshift([]);
+    }
+
+    var ids      = args[0],
+        callback = args[1],
+        scope    = args[2];
+
+    if (!Array.isArray(ids)) {
+        this._exec('notification', Number(ids), callback, scope);
+        return;
+    }
+
+    ids = this._convertIds(ids);
+
+    this._exec('notifications', [3, ids], callback, scope);
+};
