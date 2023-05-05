@@ -376,3 +376,171 @@ static NSInteger WEEKDAYS[8] = { 0, 2, 3, 4, 5, 6, 7, 1 };
 
     return trigger;
 }
+
+/**
+ * A repeating trigger based on a calendar time intervals defined by the user.
+ *
+ * @return [ UNCalendarNotificationTrigger* ]
+ */
+- (UNCalendarNotificationTrigger*) triggerWithCustomDateMatchingComponents
+{
+    NSCalendar* cal        = [self calendarWithMondayAsFirstDay];
+    NSDateComponents *date = [self customDateComponents];
+
+    date.calendar = cal;
+    date.timeZone = [NSTimeZone defaultTimeZone];
+
+    UNCalendarNotificationTrigger* trigger =
+    [UNCalendarNotificationTrigger triggerWithDateMatchingComponents:date
+                                                             repeats:YES];
+
+    NSLog(@"[local-notification] Next trigger at: %@", trigger.nextTriggerDate);
+
+    return trigger;
+}
+
+/**
+ * A repeating trigger based on a location region.
+ *
+ * @return [ UNLocationNotificationTrigger* ]
+ */
+- (UNLocationNotificationTrigger*) triggerWithRegion
+{
+    NSArray* center = [self valueForTriggerOption:@"center"];
+    double radius   = [[self valueForTriggerOption:@"radius"] doubleValue];
+    BOOL single     = [[self valueForTriggerOption:@"single"] boolValue];
+
+    CLLocationCoordinate2D coord =
+    CLLocationCoordinate2DMake([center[0] doubleValue], [center[1] doubleValue]);
+
+    CLCircularRegion* region =
+    [[CLCircularRegion alloc] initWithCenter:coord
+                                      radius:radius
+                                  identifier:self.identifier];
+
+    region.notifyOnEntry = [[self valueForTriggerOption:@"notifyOnEntry"] boolValue];
+    region.notifyOnExit  = [[self valueForTriggerOption:@"notifyOnExit"] boolValue];
+
+    return [UNLocationNotificationTrigger triggerWithRegion:region
+                                                    repeats:!single];
+}
+
+/**
+ * The time interval between the next fire date and now.
+ *
+ * @return [ double ]
+ */
+- (double) timeInterval
+{
+    double ticks   = [[self valueForTriggerOption:@"in"] doubleValue];
+    NSString* unit = [self valueForTriggerOption:@"unit"];
+    double seconds = [self convertTicksToSeconds:ticks unit:unit];
+
+    return MAX(0.01f, seconds);
+}
+
+/**
+ * The repeat interval for the notification.
+ *
+ * @return [ NSCalendarUnit ]
+ */
+- (NSCalendarUnit) repeatInterval
+{
+    NSString* interval = [self valueForTriggerOption:@"every"];
+    NSCalendarUnit units = NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay|NSCalendarUnitHour|NSCalendarUnitMinute|NSCalendarUnitSecond;
+
+    if ([interval isEqualToString:@"minute"])
+        return NSCalendarUnitSecond;
+
+    if ([interval isEqualToString:@"hour"])
+        return NSCalendarUnitMinute|NSCalendarUnitSecond;
+
+    if ([interval isEqualToString:@"day"])
+        return NSCalendarUnitHour|NSCalendarUnitMinute|NSCalendarUnitSecond;
+
+    if ([interval isEqualToString:@"week"])
+        return NSCalendarUnitWeekday|NSCalendarUnitHour|NSCalendarUnitMinute|NSCalendarUnitSecond;
+
+    if ([interval isEqualToString:@"month"])
+        return NSCalendarUnitDay|NSCalendarUnitHour|NSCalendarUnitMinute|NSCalendarUnitSecond;
+
+    if ([interval isEqualToString:@"year"])
+        return NSCalendarUnitMonth|NSCalendarUnitDay|NSCalendarUnitHour|NSCalendarUnitMinute|NSCalendarUnitSecond;
+
+    return units;
+}
+
+/**
+ * The repeat interval for the notification.
+ *
+ * @return [ NSDateComponents* ]
+ */
+- (NSDateComponents*) customDateComponents
+{
+    NSDateComponents* date  = [[NSDateComponents alloc] init];
+    NSDictionary* every     = [self valueForTriggerOption:@"every"];
+
+    date.second = 0;
+
+    for (NSString* key in every) {
+        long value = [[every valueForKey:key] longValue];
+
+        if ([key isEqualToString:@"minute"]) {
+            date.minute = value;
+        } else
+        if ([key isEqualToString:@"hour"]) {
+            date.hour = value;
+        } else
+        if ([key isEqualToString:@"day"]) {
+            date.day = value;
+        } else
+        if ([key isEqualToString:@"weekday"]) {
+            date.weekday = WEEKDAYS[value];
+        } else
+        if ([key isEqualToString:@"weekdayOrdinal"]) {
+            date.weekdayOrdinal = value;
+        } else
+        if ([key isEqualToString:@"week"]) {
+            date.weekOfYear = value;
+        } else
+        if ([key isEqualToString:@"weekOfMonth"]) {
+            date.weekOfMonth = value;
+        } else
+        if ([key isEqualToString:@"month"]) {
+            date.month = value;
+        } else
+        if ([key isEqualToString:@"quarter"]) {
+            date.quarter = value;
+        } else
+        if ([key isEqualToString:@"year"]) {
+            date.year = value;
+        }
+    }
+
+    return date;
+}
+
+/**
+ * Convert an assets path to an valid sound name attribute.
+ *
+ * @param [ NSString* ] path A relative assets file path.
+ *
+ * @return [ NSString* ]
+ */
+- (NSString*) soundNameForAsset:(NSString*)path
+{
+    return [path stringByReplacingOccurrencesOfString:@"file:/"
+                                           withString:@"www"];
+}
+
+/**
+ * Convert a ressource path to an valid sound name attribute.
+ *
+ * @param [ NSString* ] path A relative ressource file path.
+ *
+ * @return [ NSString* ]
+ */
+- (NSString*) soundNameForResource:(NSString*)path
+{
+    return [path pathComponents].lastObject;
+}
