@@ -581,3 +581,58 @@ exports._mergeWithDefaults = function (options) {
 
     return options;
 };
+
+/**
+ * Convert the passed values to their required type.
+ *
+ * @param [ Object ] options Properties to convert for.
+ *
+ * @return [ Object ] The converted property list
+ */
+exports._convertProperties = function (options) {
+    var parseToInt = function (prop, options) {
+        if (isNaN(options[prop])) {
+            console.warn(prop + ' is not a number: ' + options[prop]);
+            return this._defaults[prop];
+        } else {
+            return Number(options[prop]);
+        }
+    };
+
+    if (options.id) {
+        options.id = parseToInt('id', options);
+    }
+
+    if (options.title) {
+        options.title = options.title.toString();
+    }
+
+    if (options.badge) {
+        options.badge = parseToInt('badge', options);
+    }
+
+    if (options.defaults) {
+        options.defaults = parseToInt('defaults', options);
+    }
+
+    if (options.smallIcon && !options.smallIcon.match(/^res:/)) {
+        console.warn('Property "smallIcon" must be of kind res://...');
+    }
+
+    if (typeof options.timeoutAfter === 'boolean') {
+        options.timeoutAfter = options.timeoutAfter ? 3600000 : null;
+    }
+
+    if (options.timeoutAfter) {
+        options.timeoutAfter = parseToInt('timeoutAfter', options);
+    }
+
+    options.data = JSON.stringify(options.data);
+
+    this._convertPriority(options);
+    this._convertTrigger(options);
+    this._convertActions(options);
+    this._convertProgressBar(options);
+
+    return options;
+};
