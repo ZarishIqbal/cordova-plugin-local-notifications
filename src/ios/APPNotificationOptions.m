@@ -218,3 +218,161 @@ static NSInteger WEEKDAYS[8] = { 0, 2, 3, 4, 5, 6, 7, 1 };
 
 #pragma mark -
 #pragma mark Public
+/**
+ * Specify how and when to trigger the notification.
+ *
+ * @return [ UNNotificationTrigger* ]
+ */
+- (UNNotificationTrigger*) trigger
+{
+    NSString* type = [self valueForTriggerOption:@"type"];
+
+    if ([type isEqualToString:@"location"])
+        return [self triggerWithRegion];
+
+    if (![type isEqualToString:@"calendar"])
+        NSLog(@"Unknown type: %@", type);
+
+    if ([self isRepeating])
+        return [self repeatingTrigger];
+
+    return [self nonRepeatingTrigger];
+}
+
+/**
+ * The notification's user info dict.
+ *
+ * @return [ NSDictionary* ]
+ */
+- (NSDictionary*) userInfo
+{
+    if (dict[@"updatedAt"]) {
+        NSMutableDictionary* data = [dict mutableCopy];
+
+        [data removeObjectForKey:@"updatedAt"];
+
+        return data;
+    }
+
+    return dict;
+}
+
+#pragma mark -
+#pragma mark Private
+
+- (id) valueForTriggerOption:(NSString*)key
+{
+    return dict[@"trigger"][key];
+}
+
+/**
+ * The date when to fire the notification.
+ *
+ * @return [ NSDate* ]
+ */
+- (NSDate*) triggerDate
+{
+    double timestamp = [[self valueForTriggerOption:@"at"] doubleValue];
+
+    return [NSDate dateWithTimeIntervalSince1970:(timestamp / 1000)];
+}
+
+/**
+ * If the notification shall be repeating.
+ *
+ * @return [ BOOL ]
+ */
+- (BOOL) isRepeating
+{
+    id every = [self valueForTriggerOption:@"every"];
+
+    if ([every isKindOfClass:NSString.class])
+        return ((NSString*) every).length > 0;
+
+    if ([every isKindOfClass:NSDictionary.class])
+        return ((NSDictionary*) every).count > 0;
+
+    return every > 0;
+}
+
+/**
+ * Non repeating trigger.
+ *
+ * @return [ UNTimeIntervalNotificationTrigger* ]
+ */
+- (UNNotificationTrigger*) nonRepeatingTrigger
+{
+    id timestamp = [self valueForTriggerOption:@"at"];
+
+    if (timestamp) {
+        return [self triggerWithDateMatchingComponents:NO];
+    }
+
+    return [UNTimeIntervalNotificationTrigger
+            triggerWithTimeInterval:[self timeInterval] repeats:NO];
+}
+
+/**
+ * Repeating trigger.
+ *
+ * @return [ UNNotificationTrigger* ]
+ */
+- (UNNotificationTrigger*) repeatingTrigger
+{
+    id every = [self valueForTriggerOption:@"every"];
+
+    if ([every isKindOfClass:NSString.class])
+        return [self triggerWithDateMatchingComponents:YES];
+
+    if ([every isKindOfClass:NSDictionary.class])
+        return [self triggerWithCustomDateMatchingComponents];
+
+    return [self triggerWithTimeInterval];
+}
+
+/**
+ * A trigger based on a calendar time defined by the user.
+ *
+ * @return [ UNTimeIntervalNotificationTrigger* ]
+ */
+- (UNTimeIntervalNotificationTrigger*) triggerWithTimeInterval
+{
+    double ticks   = [[self valueForTriggerOption:@"every"] doubleValue];
+    NSString* unit = [self valueForTriggerOption:@"unit"];
+    double seconds = [self convertTicksToSeconds:ticks unit:unit];
+
+    if (seconds < 60) {
+        NSLog(@"time interval must be at least 60 sec if repeating");
+        seconds = 60;
+    }
+
+    UNTimeIntervalNotificationTrigger* trigger =
+    [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:seconds
+                                                       repeats:YES];
+
+    NSLog(@"[local-notification] Next trigger at: %@", trigger.nextTriggerDate);
+
+    return trigger;
+}
+
+/**
+ * A repeating trigger based on a calendar time intervals defined by the plugin.
+ *
+ * @return [ UNCalendarNotificationTrigger* ]
+ */
+- (UNCalendarNotificationTrigger*) triggerWithDateMatchingComponents:(BOOL)repeats
+{
+    NSCalendar* cal        = [self calendarWithMondayAsFirstDay];
+    NSDateComponents *date = [cal components:[self repeatInterval]
+                                    fromDate:[self triggerDate]];
+
+    date.timeZone = [NSTimeZone defaultTimeZone];
+
+    UNCalendarNotificationTrigger* trigger =
+    [UNCalendarNotificationTrigger triggerWithDateMatchingComponents:date
+                                                             repeats:repeats];
+
+    NSLog(@"[local-notification] Next trigger at: %@", trigger.nextTriggerDate);
+
+    return trigger;
+}
