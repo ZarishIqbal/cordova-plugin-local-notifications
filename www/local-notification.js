@@ -778,3 +778,76 @@ exports._convertTrigger = function (options) {
 
     return options;
 };
+
+/**
+ * Convert the passed values for the progressBar to their required type.
+ *
+ * @param [ Map ] options Set of custom values.
+ *
+ * @return [ Map ] Interaction object with trigger spec.
+ */
+exports._convertProgressBar = function (options) {
+    var isAndroid = device.platform == 'Android',
+        cfg       = options.progressBar;
+
+    if (cfg === undefined)
+        return;
+
+    if (typeof cfg === 'boolean') {
+        cfg = options.progressBar = { enabled: cfg };
+    }
+
+    if (typeof cfg.enabled !== 'boolean') {
+        cfg.enabled = !!(cfg.value || cfg.maxValue || cfg.indeterminate !== null);
+    }
+
+    cfg.value = cfg.value || 0;
+
+    if (isAndroid) {
+        cfg.maxValue      = cfg.maxValue || 100;
+        cfg.indeterminate = !!cfg.indeterminate;
+    }
+
+    cfg.enabled = !!cfg.enabled;
+
+    if (cfg.enabled && options.clock === true) {
+        options.clock = 'chronometer';
+    }
+
+    return options;
+};
+
+/**
+ * Create a callback function to get executed within a specific scope.
+ *
+ * @param [ Function ] fn    The function to be exec as the callback.
+ * @param [ Object ]   scope The callback function's scope.
+ *
+ * @return [ Function ]
+ */
+exports._createCallbackFn = function (fn, scope) {
+
+    if (typeof fn != 'function')
+        return;
+
+    return function () {
+        fn.apply(scope || this, arguments);
+    };
+};
+
+/**
+ * Convert the IDs to numbers.
+ *
+ * @param [ Array ] ids
+ *
+ * @return [ Array<Number> ]
+ */
+exports._convertIds = function (ids) {
+    var convertedIds = [];
+
+    for (var i = 0, len = ids.length; i < len; i++) {
+        convertedIds.push(Number(ids[i]));
+    }
+
+    return convertedIds;
+};
