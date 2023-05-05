@@ -242,3 +242,74 @@ exports.notification = function (success, error, args) {
     var obj = impl.notification(args[0]);
     success(exports.clone(obj));
 };
+
+/**
+ * List of (all) notifications.
+ *
+ * @param [ Function ] success Success callback
+ * @param [ Function ] error   Error callback
+ * @param [ Array ]    args    Interface arguments
+ *
+ * @return [ Void ]
+ */
+exports.notifications = function (success, error, args) {
+    var objs = impl.notifications(args[0], args[1]) || [];
+    success(exports.cloneAll(objs));
+};
+
+/**
+ * Manage action groups.
+ *
+ * @param [ Function ] success Success callback
+ * @param [ Function ] error   Error callback
+ * @param [ Array ]    args    Interface arguments
+ *
+ * @return [ Void ]
+ */
+exports.actions = function (success, error, args) {
+    var ActionGroup = LocalNotification.ActionGroup,
+        code        = args[0],
+        id          = args[1],
+        res         = [],
+        list, group;
+
+    switch (code) {
+        case 0:
+            list  = exports.parseActions({ actions:args[2] });
+            group = new ActionGroup(id, list);
+
+            ActionGroup.register(group);
+            break;
+        case 1:
+            ActionGroup.unregister(id);
+            break;
+        case 2:
+            res.push(ActionGroup.isRegistered(id));
+            break;
+    }
+
+    success.apply(this, res);
+};
+
+/**
+ * Inform the user through the click event that a notification was clicked.
+ *
+ * @param [ String ] xml The launch identifier.
+ *
+ * @return [ Void ]
+ */
+exports.clicked = function (xml, input) {
+    var toast = LocalNotification.Options.parse(xml),
+        event = toast.action || 'click',
+        meta  = Object.assign({}, input);
+
+    if (input && input.size > 0) {
+        meta.text = input.first().current.value;
+    }
+
+    if (!ready) {
+        exports.launch(null, null, [toast.id, event]);
+    }
+
+    exports.fireEvent(event, toast, meta);
+};
