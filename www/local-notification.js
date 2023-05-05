@@ -120,3 +120,29 @@ exports.schedule = function (msgs, callback, scope, args) {
         this.requestPermission(fn, this);
     }
 };
+
+/**
+ * Schedule notifications.
+ *
+ * @param [ Array ]    notifications The notifications to schedule.
+ * @param [ Function ] callback      The function to be exec as the callback.
+ * @param [ Object ]   scope         The callback function's scope.
+ * @param [ Object ]   args          Optional flags how to schedule.
+ *
+ * @return [ Void ]
+ */
+exports.update = function (msgs, callback, scope, args) {
+    var fn = function(granted) {
+        var toasts = this._toArray(msgs);
+
+        if (!granted && callback) {
+            callback.call(scope || this, false);
+            return;
+        }
+
+        for (var i = 0, len = toasts.length; i < len; i++) {
+            this._convertProperties(toasts[i]);
+        }
+
+        this._exec('update', toasts, callback, scope);
+    };
