@@ -153,3 +153,92 @@ exports.clear = function (success, error, args) {
 
     success();
 };
+
+/**
+ * Clear all notifications.
+ *
+ * @param [ Function ] success Success callback
+ * @param [ Function ] error   Error callback
+ *
+ * @return [ Void ]
+ */
+exports.clearAll = function (success, error) {
+    impl.clearAll();
+    exports.fireEvent('clearall');
+    success();
+};
+
+/**
+ * Cancel the notifications specified by id.
+ *
+ * @param [ Function ] success Success callback
+ * @param [ Function ] error   Error callback
+ * @param [ Array ]    args    Interface arguments
+ *
+ * @return [ Void ]
+ */
+exports.cancel = function (success, error, args) {
+    var toasts = impl.cancel(args) || [];
+
+    for (var toast of toasts) {
+        exports.fireEvent('cancel', toast);
+    }
+
+    success();
+};
+
+/**
+ * Cancel all notifications.
+ *
+ * @param [ Function ] success Success callback
+ * @param [ Function ] error   Error callback
+ *
+ * @return [ Void ]
+ */
+exports.cancelAll = function (success, error) {
+    impl.cancelAll();
+    exports.fireEvent('cancelall');
+    success();
+};
+
+/**
+ * Get the type of notification.
+ *
+ * @param [ Function ] success Success callback
+ * @param [ Function ] error   Error callback
+ * @param [ Array ]    args    Interface arguments
+ *
+ * @return [ Void ]
+ */
+exports.type = function (success, error, args) {
+    var type = impl.type(args[0]);
+    success(type);
+};
+
+/**
+ * List of all notification ids.
+ *
+ * @param [ Function ] success Success callback
+ * @param [ Function ] error   Error callback
+ * @param [ Array ]    args    Interface arguments
+ *
+ * @return [ Void ]
+ */
+exports.ids = function (success, error, args) {
+    var ids = impl.ids(args[0]) || [];
+    success(Array.from(ids));
+};
+
+/**
+ * Get a single notification by id.
+ *
+ * @param [ Function ] success Success callback
+ * @param [ Function ] error   Error callback
+ * @param [ Array ]    args    Interface arguments
+ *
+ * @return [ Void ]
+ */
+exports.notification = function (success, error, args) {
+    var obj = impl.notification(args[0]);
+    success(exports.clone(obj));
+};
