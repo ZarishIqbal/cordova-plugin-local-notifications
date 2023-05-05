@@ -42,3 +42,114 @@ exports.launch = function (success, error, args) {
 
     plugin.launchDetails = { id: args[0], action: args[1] };
 };
+
+/**
+ * To execute all queued events.
+ *
+ * @return [ Void ]
+ */
+exports.ready = function () {
+    ready = true;
+
+    for (var item of queue) {
+        exports.fireEvent.apply(exports, item);
+    }
+
+    queue = [];
+};
+
+/**
+ * Check permission to show notifications.
+ *
+ * @param [ Function ] success Success callback
+ * @param [ Function ] error   Error callback
+ *
+ * @return [ Void ]
+ */
+exports.check = function (success, error) {
+    var granted = impl.hasPermission();
+    success(granted);
+};
+
+/**
+ * Request permission to show notifications.
+ *
+ * @param [ Function ] success Success callback
+ * @param [ Function ] error   Error callback
+ *
+ * @return [ Void ]
+ */
+exports.request = function (success, error) {
+    exports.check(success, error);
+};
+
+/**
+ * Schedule notifications.
+ *
+ * @param [ Function ] success Success callback
+ * @param [ Function ] error   Error callback
+ * @param [ Array ]    args    Interface arguments
+ *
+ * @return [ Void ]
+ */
+exports.schedule = function (success, error, args) {
+    var options = [];
+
+    for (var props of args) {
+        opts  = exports.parseOptions(props);
+        options.push(opts);
+    }
+
+    impl.schedule(options);
+
+    for (var toast of options) {
+        exports.fireEvent('add', toast);
+    }
+
+    exports.check(success, error);
+};
+
+/**
+ * Update notifications.
+ *
+ * @param [ Function ] success Success callback
+ * @param [ Function ] error   Error callback
+ * @param [ Array ]    args    Interface arguments
+ *
+ * @return [ Void ]
+ */
+exports.update = function (success, error, args) {
+    var options = [];
+
+    for (var props of args) {
+        opts  = exports.parseOptions(props);
+        options.push(opts);
+    }
+
+    impl.update(options);
+
+    for (var toast of options) {
+        exports.fireEvent('update', toast);
+    }
+
+    exports.check(success, error);
+};
+
+/**
+ * Clear the notifications specified by id.
+ *
+ * @param [ Function ] success Success callback
+ * @param [ Function ] error   Error callback
+ * @param [ Array ]    args    Interface arguments
+ *
+ * @return [ Void ]
+ */
+exports.clear = function (success, error, args) {
+    var toasts = impl.clear(args) || [];
+
+    for (var toast of toasts) {
+        exports.fireEvent('clear', toast);
+    }
+
+    success();
+};
