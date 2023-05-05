@@ -387,3 +387,109 @@ exports.clone = function (obj) {
 
     return clone;
 };
+
+/**
+ * Parse notification spec into an instance of prefered type.
+ *
+ * @param [ Object ] obj The notification options map.
+ *
+ * @return [ LocalNotification.Options ]
+ */
+exports.parseOptions = function (obj) {
+    var opts   = new LocalNotification.Options(),
+        ignore = ['progressBar', 'actions', 'trigger'];
+
+    for (var prop in opts) {
+        if (!ignore.includes(prop) && obj[prop]) {
+            opts[prop] = obj[prop];
+        }
+    }
+
+    var progressBar  = exports.parseProgressBar(obj);
+    opts.progressBar = progressBar;
+
+    var trigger  = exports.parseTrigger(obj);
+    opts.trigger = trigger;
+
+    var actions  = exports.parseActions(obj);
+    opts.actions = actions;
+
+    return opts;
+};
+
+/**
+ * Parse trigger spec into instance of prefered type.
+ *
+ * @param [ Object ] obj The notification options map.
+ *
+ * @return [ LocalNotification.Trigger ]
+ */
+exports.parseTrigger = function (obj) {
+    var trigger = new LocalNotification.Toast.Trigger(),
+        spec    = obj.trigger, val;
+
+    if (!spec) return trigger;
+
+    for (var prop in trigger) {
+        val = spec[prop];
+        if (!val) continue;
+        trigger[prop] = prop == 'every' ? exports.parseEvery(val) : val;
+    }
+
+    return trigger;
+};
+
+/**
+ * Parse trigger.every spec into instance of prefered type.
+ *
+ * @param [ Object ] spec The trigger.every object.
+ *
+ * @return [ LocalNotification.Every|String ]
+ */
+exports.parseEvery = function (spec) {
+    var every = new LocalNotification.Toast.Every();
+
+    if (typeof spec !== 'object') return spec;
+
+    for (var prop in every) {
+        if (spec.hasOwnProperty(prop)) every[prop] = parseInt(spec[prop]);
+    }
+
+    return every;
+};
+
+/**
+ * Parse action specs into instances of prefered types.
+ *
+ * @param [ Object ] obj The notification options map.
+ *
+ * @return [ Array<LocalNotification.Action> ]
+ */
+exports.parseActions = function (obj) {
+    var spec    = obj.actions,
+        actions = [], btn;
+
+    if (!spec) return actions;
+
+    if (typeof spec === 'string') {
+        var group = LocalNotification.ActionGroup.lookup(spec);
+        return group ? group.actions : actions;
+    }
+
+    for (var action of spec) {
+        if (!action.type || action.type == 'button') {
+            btn = new LocalNotification.Toast.Button();
+        } else
+        if (action.type == 'input') {
+            btn = new LocalNotification.Toast.Input();
+        }
+
+        for (var prop in btn) {
+            if (action[prop]) btn[prop] = action[prop];
+        }
+
+        actions.push(btn);
+    }
+
+    return actions;
+};
