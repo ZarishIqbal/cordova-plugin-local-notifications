@@ -493,3 +493,32 @@ exports.parseActions = function (obj) {
 
     return actions;
 };
+
+/**
+ * Parse progressBar specs into instances of prefered types.
+ *
+ * @param [ Object ] obj The notification options map.
+ *
+ * @return [ LocalNotification.ProgressBar ]
+ */
+exports.parseProgressBar = function (obj) {
+    var bar  = new LocalNotification.Toast.ProgressBar(),
+        spec = obj.progressBar;
+
+    if (!spec) return bar;
+
+    for (var prop in bar) {
+        if (spec[prop]) bar[prop] = spec[prop];
+    }
+
+    return bar;
+};
+
+// Handle onclick event
+document.addEventListener('activated', function (e) {
+    if (e.kind == ActivationKind.toastNotification) {
+        exports.clicked(e.raw.argument, e.raw.userInput);
+    }
+}, false);
+
+cordova.commandProxy.add('LocalNotification', exports);
