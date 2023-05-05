@@ -396,3 +396,60 @@ exports.getTriggered = function (callback, scope) {
 exports.addActions = function (id, actions, callback, scope) {
     this._exec('actions', [0, id, actions], callback, scope);
 };
+
+/**
+ * Remove an group of actions by id.
+ *
+ * @param [ String ]   id       The Id of the group.
+ * @param [ Function ] callback The function to be exec as the callback.
+ * @param [ Object ]   scope    The callback function's scope.
+ *
+ * @return [ Void ]
+ */
+exports.removeActions = function (id, callback, scope) {
+    this._exec('actions', [1, id], callback, scope);
+};
+
+/**
+ * Check if a group of actions is defined.
+ *
+ * @param [ String ]   id       The Id of the group.
+ * @param [ Function ] callback The function to be exec as the callback.
+ * @param [ Object ]   scope    The callback function's scope.
+ *
+ * @return [ Void ]
+ */
+exports.hasActions = function (id, callback, scope) {
+    this._exec('actions', [2, id], callback, scope);
+};
+
+/**
+ * The (platform specific) default settings.
+ *
+ * @return [ Object ]
+ */
+exports.getDefaults = function () {
+    var map = Object.assign({}, this._defaults);
+
+    for (var key in map) {
+        if (Array.isArray(map[key])) {
+            map[key] = Array.from(map[key]);
+        } else
+        if (Object.prototype.isPrototypeOf(map[key])) {
+            map[key] = Object.assign({}, map[key]);
+        }
+    }
+
+    return map;
+};
+
+/**
+ * Overwrite default settings.
+ *
+ * @param [ Object ] newDefaults New default values.
+ *
+ * @return [ Void ]
+ */
+exports.setDefaults = function (newDefaults) {
+    Object.assign(this._defaults, newDefaults);
+};
