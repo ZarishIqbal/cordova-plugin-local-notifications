@@ -453,3 +453,51 @@ exports.getDefaults = function () {
 exports.setDefaults = function (newDefaults) {
     Object.assign(this._defaults, newDefaults);
 };
+
+/**
+ * Register callback for given event.
+ *
+ * @param [ String ]   event    The name of the event.
+ * @param [ Function ] callback The function to be exec as callback.
+ * @param [ Object ]   scope    The callback function's scope.
+ *
+ * @return [ Void ]
+ */
+exports.on = function (event, callback, scope) {
+    var type = typeof callback;
+
+    if (type !== 'function' && type !== 'string')
+        return;
+
+    if (!this._listener[event]) {
+        this._listener[event] = [];
+    }
+
+    var item = [callback, scope || window];
+
+    this._listener[event].push(item);
+};
+
+/**
+ * Unregister callback for given event.
+ *
+ * @param [ String ]   event    The name of the event.
+ * @param [ Function ] callback The function to be exec as callback.
+ *
+ * @return [ Void ]
+ */
+exports.un = function (event, callback) {
+    var listener = this._listener[event];
+
+    if (!listener)
+        return;
+
+    for (var i = 0; i < listener.length; i++) {
+        var fn = listener[i][0];
+
+        if (fn == callback) {
+            listener.splice(i, 1);
+            break;
+        }
+    }
+};
