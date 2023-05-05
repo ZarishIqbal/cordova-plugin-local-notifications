@@ -636,3 +636,63 @@ exports._convertProperties = function (options) {
 
     return options;
 };
+
+/**
+ * Convert the passed values for the priority to their required type.
+ *
+ * @param [ Map ] options Set of custom values.
+ *
+ * @return [ Map ] Interaction object with trigger spec.
+ */
+exports._convertPriority = function (options) {
+    var prio = options.priority || options.prio || 0;
+
+    if (typeof prio === 'string') {
+        prio = { min: -2, low: -1, high: 1, max: 2 }[prio] || 0;
+    }
+
+    if (options.foreground === true) {
+        prio = Math.max(prio, 1);
+    }
+
+    if (options.foreground === false) {
+        prio = Math.min(prio, 0);
+    }
+
+    options.priority = prio;
+
+    return options;
+};
+
+/**
+ * Convert the passed values to their required type, modifying them
+ * directly for Android and passing the converted list back for iOS.
+ *
+ * @param [ Map ] options Set of custom values.
+ *
+ * @return [ Map ] Interaction object with category & actions.
+ */
+exports._convertActions = function (options) {
+    var actions = [];
+
+    if (!options.actions || typeof options.actions === 'string')
+        return options;
+
+    for (var i = 0, len = options.actions.length; i < len; i++) {
+        var action = options.actions[i];
+
+        if (!action.id) {
+            console.warn('Action with title ' + action.title + ' ' +
+                         'has no id and will not be added.');
+            continue;
+        }
+
+        action.id = action.id.toString();
+
+        actions.push(action);
+    }
+
+    options.actions = actions;
+
+    return options;
+};
