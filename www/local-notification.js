@@ -85,3 +85,38 @@ exports.hasPermission = function (callback, scope) {
 exports.requestPermission = function (callback, scope) {
     this._exec('request', null, callback, scope);
 };
+
+/**
+ * Schedule notifications.
+ *
+ * @param [ Array ]    notifications The notifications to schedule.
+ * @param [ Function ] callback      The function to be exec as the callback.
+ * @param [ Object ]   scope         The callback function's scope.
+ * @param [ Object ]   args          Optional flags how to schedule.
+ *
+ * @return [ Void ]
+ */
+exports.schedule = function (msgs, callback, scope, args) {
+    var fn = function (granted) {
+        var toasts = this._toArray(msgs);
+
+        if (!granted && callback) {
+            callback.call(scope || this, false);
+            return;
+        }
+
+        for (var i = 0, len = toasts.length; i < len; i++) {
+            var toast = toasts[i];
+            this._mergeWithDefaults(toast);
+            this._convertProperties(toast);
+        }
+
+        this._exec('schedule', toasts, callback, scope);
+    };
+
+    if (args && args.skipPermission) {
+        fn.call(this, true);
+    } else {
+        this.requestPermission(fn, this);
+    }
+};
