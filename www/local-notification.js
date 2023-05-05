@@ -851,3 +851,70 @@ exports._convertIds = function (ids) {
 
     return convertedIds;
 };
+
+/**
+ * First found value for the given keys.
+ *
+ * @param [ Object ]         options Object with key-value properties.
+ * @param [ *Array<String> ] keys    List of keys.
+ *
+ * @return [ Object ]
+ */
+exports._getValueFor = function (options) {
+    var keys = Array.apply(null, arguments).slice(1);
+
+    for (var i = 0, key = keys[i], len = keys.length; i < len; key = keys[++i]) {
+        if (options.hasOwnProperty(key)) {
+            return options[key];
+        }
+    }
+
+    return null;
+};
+
+/**
+ * Convert a value to an array.
+ *
+ * @param [ Object ] obj Any kind of object.
+ *
+ * @return [ Array ] An array with the object as first item.
+ */
+exports._toArray = function (obj) {
+    return Array.isArray(obj) ? Array.from(obj) : [obj];
+};
+
+/**
+ * Execute the native counterpart.
+ *
+ * @param [ String ]  action   The name of the action.
+ * @param [ Array ]   args     Array of arguments.
+ * @param [ Function] callback The callback function.
+ * @param [ Object ] scope     The scope for the function.
+ *
+ * @return [ Void ]
+ */
+exports._exec = function (action, args, callback, scope) {
+    var fn     = this._createCallbackFn(callback, scope),
+        params = [];
+
+    if (Array.isArray(args)) {
+        params = args;
+    } else if (args !== null) {
+        params.push(args);
+    }
+
+    exec(fn, null, 'LocalNotification', action, params);
+};
+
+/**
+ * Set the launch details if the app was launched by clicking on a toast.
+ *
+ * @return [ Void ]
+ */
+exports._setLaunchDetails = function () {
+    exports._exec('launch', null, function (details) {
+        if (details) {
+            exports.launchDetails = details;
+        }
+    });
+};
