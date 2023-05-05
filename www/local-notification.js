@@ -350,3 +350,49 @@ exports.get = function () {
 
     this._exec('notifications', [3, ids], callback, scope);
 };
+
+/**
+ * List for all notifications.
+ *
+ * @param [ Function ] callback The function to be exec as the callback.
+ * @param [ Object ]   scope    The callback function's scope.
+ *
+ * @return [ Void ]
+ */
+exports.getAll = function (callback, scope) {
+    this._exec('notifications', 0, callback, scope);
+};
+
+/**
+ * List of all scheduled notifications.
+ *
+ * @param [ Function ]   callback The function to be exec as the callback.
+ * @param [ Object ]     scope    The callback function's scope.
+ */
+exports.getScheduled = function (callback, scope) {
+    this._exec('notifications', 1, callback, scope);
+};
+
+/**
+ * List of all triggered notifications.
+ *
+ * @param [ Function ]   callback The function to be exec as the callback.
+ * @param [ Object ]     scope    The callback function's scope.
+ */
+exports.getTriggered = function (callback, scope) {
+    this._exec('notifications', 2, callback, scope);
+};
+
+/**
+ * Add an group of actions by id.
+ *
+ * @param [ String ]   id       The Id of the group.
+ * @param [ Array]     actions  The action config settings.
+ * @param [ Function ] callback The function to be exec as the callback.
+ * @param [ Object ]   scope    The callback function's scope.
+ *
+ * @return [ Void ]
+ */
+exports.addActions = function (id, actions, callback, scope) {
+    this._exec('actions', [0, id, actions], callback, scope);
+};
