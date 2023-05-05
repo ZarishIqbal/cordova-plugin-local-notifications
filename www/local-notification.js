@@ -501,3 +501,83 @@ exports.un = function (event, callback) {
         }
     }
 };
+
+/**
+ * Fire the event with given arguments.
+ *
+ * @param [ String ] event The event's name.
+ * @param [ *Array]  args  The callback's arguments.
+ *
+ * @return [ Void]
+ */
+exports.fireEvent = function (event) {
+    var args     = Array.apply(null, arguments).slice(1),
+        listener = this._listener[event];
+
+    if (!listener)
+        return;
+
+    if (args[0] && typeof args[0].data === 'string') {
+        args[0].data = JSON.parse(args[0].data);
+    }
+
+    for (var i = 0; i < listener.length; i++) {
+        var fn    = listener[i][0],
+            scope = listener[i][1];
+
+        if (typeof fn !== 'function') {
+            fn = scope[fn];
+        }
+
+        fn.apply(scope, args);
+    }
+};
+
+/**
+ * Fire queued events once the device is ready and all listeners are registered.
+ *
+ * @return [ Void ]
+ */
+exports.fireQueuedEvents = function() {
+    exports._exec('ready');
+};
+
+/**
+ * Merge custom properties with the default values.
+ *
+ * @param [ Object ] options Set of custom values.
+ *
+ * @retrun [ Object ]
+ */
+exports._mergeWithDefaults = function (options) {
+    var values = this.getDefaults();
+
+    if (values.hasOwnProperty('sticky')) {
+        options.sticky = this._getValueFor(options, 'sticky', 'ongoing');
+    }
+
+    if (options.sticky && options.autoClear !== true) {
+        options.autoClear = false;
+    }
+
+    Object.assign(values, options);
+
+    for (var key in values) {
+        if (values[key] !== null) {
+            options[key] = values[key];
+        } else {
+            delete options[key];
+        }
+
+        if (!this._defaults.hasOwnProperty(key)) {
+            console.warn('Unknown property: ' + key);
+        }
+    }
+
+    options.meta = {
+        plugin:  'cordova-plugin-local-notification',
+        version: '0.9-beta.3'
+    };
+
+    return options;
+};
