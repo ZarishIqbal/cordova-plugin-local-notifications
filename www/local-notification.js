@@ -239,3 +239,59 @@ exports.isPresent = function (id, callback, scope) {
 exports.isScheduled = function (id, callback, scope) {
     this.hasType(id, 'scheduled', callback, scope);
 };
+
+/**
+ * Check if a notification was triggered.
+ *
+ * @param [ Int ]      id       The ID of the notification.
+ * @param [ Function ] callback The function to be exec as the callback.
+ * @param [ Object ]   scope    The callback function's scope.
+ *
+ * @return [ Void ]
+ */
+exports.isTriggered = function (id, callback, scope) {
+    this.hasType(id, 'triggered', callback, scope);
+};
+
+/**
+ * Check if a notification has a given type.
+ *
+ * @param [ Int ]      id       The ID of the notification.
+ * @param [ String ]   type     The type of the notification.
+ * @param [ Function ] callback The function to be exec as the callback.
+ * @param [ Object ]   scope    The callback function's scope.
+ *
+ * @return [ Void ]
+ */
+exports.hasType = function (id, type, callback, scope) {
+    var fn = this._createCallbackFn(callback, scope);
+
+    this.getType(id, function (type2) {
+        fn(type == type2);
+    });
+};
+
+/**
+ * Get the type (triggered, scheduled) for the notification.
+ *
+ * @param [ Int ]      id       The ID of the notification.
+ * @param [ Function ] callback The function to be exec as the callback.
+ * @param [ Object ]   scope    The callback function's scope.
+ *
+ * @return [ Void ]
+ */
+exports.getType = function (id, callback, scope) {
+    this._exec('type', id, callback, scope);
+};
+
+/**
+ * List of all notification ids.
+ *
+ * @param [ Function ] callback The function to be exec as the callback.
+ * @param [ Object ]   scope    The callback function's scope.
+ *
+ * @return [ Void ]
+ */
+exports.getIds = function (callback, scope) {
+    this._exec('ids', 0, callback, scope);
+};
