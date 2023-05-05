@@ -696,3 +696,85 @@ exports._convertActions = function (options) {
 
     return options;
 };
+
+/**
+ * Convert the passed values for the trigger to their required type.
+ *
+ * @param [ Map ] options Set of custom values.
+ *
+ * @return [ Map ] Interaction object with trigger spec.
+ */
+exports._convertTrigger = function (options) {
+    var trigger  = options.trigger || {},
+        date     = this._getValueFor(trigger, 'at', 'firstAt', 'date');
+
+    var dateToNum = function (date) {
+        var num = typeof date == 'object' ? date.getTime() : date;
+        return Math.round(num);
+    };
+
+    if (!options.trigger)
+        return;
+
+    if (!trigger.type) {
+        trigger.type = trigger.center ? 'location' : 'calendar';
+    }
+
+    var isCal = trigger.type == 'calendar';
+
+    if (isCal && !date) {
+        date = this._getValueFor(options, 'at', 'firstAt', 'date');
+    }
+
+    if (isCal && !trigger.every && options.every) {
+        trigger.every = options.every;
+    }
+
+    if (isCal && (trigger.in || trigger.every)) {
+        date = null;
+    }
+
+    if (isCal && date) {
+        trigger.at = dateToNum(date);
+    }
+
+    if (isCal && trigger.firstAt) {
+        trigger.firstAt = dateToNum(trigger.firstAt);
+    }
+
+    if (isCal && trigger.before) {
+        trigger.before = dateToNum(trigger.before);
+    }
+
+    if (isCal && trigger.after) {
+        trigger.after = dateToNum(trigger.after);
+    }
+
+    if (!trigger.count && device.platform == 'windows') {
+        trigger.count = trigger.every ? 5 : 1;
+    }
+
+    if (trigger.count && device.platform == 'iOS') {
+        console.warn('trigger: { count: } is not supported on iOS.');
+    }
+
+    if (!isCal) {
+        trigger.notifyOnEntry = !!trigger.notifyOnEntry;
+        trigger.notifyOnExit  = trigger.notifyOnExit === true;
+        trigger.radius        = trigger.radius || 5;
+        trigger.single        = !!trigger.single;
+    }
+
+    if (!isCal || trigger.at) {
+        delete trigger.every;
+    }
+
+    delete options.every;
+    delete options.at;
+    delete options.firstAt;
+    delete options.date;
+
+    options.trigger = trigger;
+
+    return options;
+};
