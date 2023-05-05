@@ -197,3 +197,45 @@ exports.cancel = function (ids, callback, scope) {
 
     this._exec('cancel', ids, callback, scope);
 };
+
+/**
+ * Cancel all scheduled notifications.
+ *
+ * @param [ Function ] callback The function to be exec as the callback.
+ * @param [ Object ]   scope    The callback function's scope.
+ *
+ * @return [ Void ]
+ */
+exports.cancelAll = function (callback, scope) {
+    this._exec('cancelAll', null, callback, scope);
+};
+
+/**
+ * Check if a notification is present.
+ *
+ * @param [ Int ]      id       The ID of the notification.
+ * @param [ Function ] callback The function to be exec as the callback.
+ * @param [ Object ]   scope    The callback function's scope.
+ *
+ * @return [ Void ]
+ */
+exports.isPresent = function (id, callback, scope) {
+    var fn = this._createCallbackFn(callback, scope);
+
+    this.getType(id, function (type) {
+        fn(type != 'unknown');
+    });
+};
+
+/**
+ * Check if a notification is scheduled.
+ *
+ * @param [ Int ]      id       The ID of the notification.
+ * @param [ Function ] callback The function to be exec as the callback.
+ * @param [ Object ]   scope    The callback function's scope.
+ *
+ * @return [ Void ]
+ */
+exports.isScheduled = function (id, callback, scope) {
+    this.hasType(id, 'scheduled', callback, scope);
+};
