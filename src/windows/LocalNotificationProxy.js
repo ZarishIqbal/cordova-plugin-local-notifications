@@ -313,3 +313,77 @@ exports.clicked = function (xml, input) {
 
     exports.fireEvent(event, toast, meta);
 };
+
+/**
+ * Invoke listeners for the given event.
+ *
+ * @param [ String ] event The name of the event.
+ * @param [ Object ] toast Optional notification object.
+ * @param [ Object ] data  Optional meta data about the event.
+ *
+ * @return [ Void ]
+ */
+exports.fireEvent = function (event, toast, data) {
+    var meta   = Object.assign({ event: event }, data),
+        plugin = cordova.plugins.notification.local;
+
+    if (!ready) {
+        queue.push(arguments);
+        return;
+    }
+
+    if (toast) {
+        plugin.fireEvent(event, exports.clone(toast), meta);
+    } else {
+        plugin.fireEvent(event, meta);
+    }
+};
+
+/**
+ * Clone the objects and delete internal properties.
+ *
+ * @param [ Array<Object> ] objs The objects to clone for.
+ *
+ * @return [ Array<Object> ]
+ */
+exports.cloneAll = function (objs) {
+    var clones = [];
+
+    if (!Array.isArray(objs)) {
+        objs = Array.from(objs);
+    }
+
+    for (var obj of objs) {
+        clones.push(exports.clone(obj));
+    }
+
+    return clones;
+};
+
+/**
+ * Clone the object and delete internal properties.
+ *
+ * @param [ Object ] obj The object to clone for.
+ *
+ * @return [ Object ]
+ */
+exports.clone = function (obj) {
+    var ignore = ['action'],
+        dclone = ['trigger'],
+        clone  = {};
+
+    if (obj === null) return null;
+
+    for (var prop in obj) {
+        if (ignore.includes(prop) || typeof obj[prop] === 'function')
+            continue;
+
+        try {
+            clone[prop] = dclone.includes(prop) ? exports.clone(obj[prop]) : obj[prop];
+        } catch (e) {
+            clone[prop] = null;
+        }
+    }
+
+    return clone;
+};
