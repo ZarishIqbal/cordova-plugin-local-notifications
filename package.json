@@ -43,7 +43,7 @@
     },
     {
       "name": "apple-ios",
-      "version": ">=11.0.0"
+      "version": ">=7.0.0"
     }
   ],
   "author": "Sebastián Katzer",
