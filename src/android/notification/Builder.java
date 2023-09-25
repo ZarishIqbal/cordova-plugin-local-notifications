@@ -391,7 +391,7 @@ public final class Builder {
       context,
       reqCode,
       intent,
-      FLAG_IMMUTABLE
+      PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
     );
 
     builder.setDeleteIntent(deleteIntent);

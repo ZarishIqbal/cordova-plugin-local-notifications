@@ -23,7 +23,6 @@ package de.appplant.cordova.plugin.notification;
 
 import static android.app.AlarmManager.RTC;
 import static android.app.AlarmManager.RTC_WAKEUP;
-import static android.app.PendingIntent.FLAG_IMMUTABLE;
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.M;
 import static android.support.v4.app.NotificationCompat.PRIORITY_HIGH;
@@ -181,7 +180,7 @@ public final class Notification {
     Set<String> ids = new ArraySet<String>();
     AlarmManager mgr = getAlarmMgr();
 
-    // cancelScheduledAlarms();
+    cancelScheduledAlarms();
 
     do {
       Date date = request.getTriggerDate();
@@ -218,7 +217,7 @@ public final class Notification {
 
       if (!date.after(new Date()) && trigger(intent, receiver)) continue;
 
-      PendingIntent pi = PendingIntent.getBroadcast(context, 0, intent, 0);
+      PendingIntent pi = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT);
 
       try {
         switch (options.getPrio()) {
@@ -303,7 +302,7 @@ public final class Notification {
     for (String action : actions) {
       Intent intent = new Intent(action);
 
-      PendingIntent pi = PendingIntent.getBroadcast(context, 0, intent, 0);
+      PendingIntent pi = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT);
 
       if (pi != null) {
         getAlarmMgr().cancel(pi);
