@@ -218,7 +218,7 @@ public final class Notification {
 
       if (!date.after(new Date()) && trigger(intent, receiver)) continue;
 
-      PendingIntent pi = PendingIntent.getBroadcast(context, 0, intent);
+      PendingIntent pi = PendingIntent.getBroadcast(context, 0, intent, 0);
 
       try {
         switch (options.getPrio()) {
