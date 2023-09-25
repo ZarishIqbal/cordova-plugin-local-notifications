@@ -181,7 +181,7 @@ public final class Notification {
     Set<String> ids = new ArraySet<String>();
     AlarmManager mgr = getAlarmMgr();
 
-    cancelScheduledAlarms();
+    // cancelScheduledAlarms();
 
     do {
       Date date = request.getTriggerDate();
