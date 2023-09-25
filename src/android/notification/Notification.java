@@ -23,7 +23,7 @@ package de.appplant.cordova.plugin.notification;
 
 import static android.app.AlarmManager.RTC;
 import static android.app.AlarmManager.RTC_WAKEUP;
-import static android.app.PendingIntent.FLAG_CANCEL_CURRENT;
+import static android.app.PendingIntent.FLAG_IMMUTABLE;
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.M;
 import static android.support.v4.app.NotificationCompat.PRIORITY_HIGH;
@@ -222,7 +222,7 @@ public final class Notification {
         context,
         0,
         intent,
-        FLAG_CANCEL_CURRENT
+        FLAG_IMMUTABLE
       );
 
       try {
