@@ -475,7 +475,7 @@ public final class Builder {
 
     int reqCode = random.nextInt();
 
-    return PendingIntent.getService(context, reqCode, FLAG_IMMUTABLE);
+    return PendingIntent.getService(context, reqCode, intent, FLAG_IMMUTABLE);
   }
 
   /**
