@@ -152,6 +152,8 @@
 
         <source-file src="src/android/notification/Manager.java" target-dir="src/de/appplant/cordova/plugin/notification" />
 
+        <source-file src="src/android/notification/util/CustomExceptionHandler.java" target-dir="src/de/appplant/cordova/plugin/notification/util" />
+
         <source-file src="src/android/notification/Notification.java" target-dir="src/de/appplant/cordova/plugin/notification" />
 
         <source-file src="src/android/notification/Options.java" target-dir="src/de/appplant/cordova/plugin/notification" />

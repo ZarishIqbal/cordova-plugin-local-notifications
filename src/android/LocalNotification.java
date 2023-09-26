@@ -37,6 +37,7 @@ import de.appplant.cordova.plugin.notification.Notification;
 import de.appplant.cordova.plugin.notification.Options;
 import de.appplant.cordova.plugin.notification.Request;
 import de.appplant.cordova.plugin.notification.action.ActionGroup;
+import de.appplant.cordova.plugin.notification.util.CustomExceptionHandler;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
