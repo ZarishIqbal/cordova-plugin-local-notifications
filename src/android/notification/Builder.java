@@ -147,6 +147,7 @@ public final class Builder {
         .setGroup(options.getGroup())
         .setGroupSummary(options.getGroupSummary())
         .setTimeoutAfter(options.getTimeout())
+        .setForegroundServiceBehavior(options.getPrio())
         .setLights(
           options.getLedColor(),
           options.getLedOn(),
@@ -391,7 +392,9 @@ public final class Builder {
       context,
       reqCode,
       intent,
-      PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
+      0
+      //crash test
+      // PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
     );
 
     builder.setDeleteIntent(deleteIntent);
@@ -422,7 +425,9 @@ public final class Builder {
       context,
       reqCode,
       intent,
-      FLAG_IMMUTABLE
+      0
+      //crash test
+      // FLAG_IMMUTABLE
     );
 
     builder.setContentIntent(contentIntent);
@@ -474,7 +479,14 @@ public final class Builder {
 
     int reqCode = random.nextInt();
 
-    return PendingIntent.getService(context, reqCode, intent, FLAG_IMMUTABLE);
+    return PendingIntent.getService(
+      context,
+      reqCode,
+      intent,
+      0
+      //crash test
+      //FLAG_IMMUTABLE
+    );
   }
 
   /**

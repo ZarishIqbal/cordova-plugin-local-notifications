@@ -29,8 +29,9 @@ if (!project.ext.has('appShortcutBadgerVersion')) {
 
 dependencies {
     implementation "me.leolin:ShortcutBadger:${appShortcutBadgerVersion}@aar"
+    //crash test
 //      // For Java
-//     implementation 'androidx.work:work-runtime:2.7.1' 
+//     implementation 'androidx.work:work-runtime:2.7.1'  
 
 //   // For Kotlin
 //     implementation 'androidx.work:work-runtime-ktx:2.7.1'
