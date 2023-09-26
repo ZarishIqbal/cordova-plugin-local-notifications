@@ -78,7 +78,10 @@ public class LocalNotification extends CordovaPlugin {
    */
   @Override
   public void initialize(CordovaInterface cordova, CordovaWebView webView) {
-    Thread.setDefaultUncaughtExceptionHandler(new CustomExceptionHandler(this));
+    Context context = cordova.getActivity();
+    Thread.setDefaultUncaughtExceptionHandler(
+      new CustomExceptionHandler(context)
+    );
     LocalNotification.webView = new WeakReference<CordovaWebView>(webView);
   }
 
