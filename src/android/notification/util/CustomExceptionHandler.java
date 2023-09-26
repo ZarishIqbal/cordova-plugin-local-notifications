@@ -1,3 +1,5 @@
+package de.appplant.cordova.plugin.notification.util;
+
 import android.content.Context;
 import android.util.Log;
 
