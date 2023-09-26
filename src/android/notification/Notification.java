@@ -221,8 +221,7 @@ public final class Notification {
         context,
         0,
         intent,
-        0
-        // PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
+        PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
       );
 
       try {
@@ -312,8 +311,7 @@ public final class Notification {
         context,
         0,
         intent,
-        0
-        // PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
+        PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
       );
 
       if (pi != null) {
