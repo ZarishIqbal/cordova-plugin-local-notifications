@@ -25,6 +25,7 @@ import static android.app.PendingIntent.FLAG_IMMUTABLE;
 import static de.appplant.cordova.plugin.notification.Notification.EXTRA_UPDATE;
 
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -32,6 +33,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.net.Uri;
 import android.os.Bundle;
@@ -39,11 +41,9 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationCompat.MessagingStyle.Message;
 import android.support.v4.media.app.NotificationCompat.MediaStyle;
 import android.support.v4.media.session.MediaSessionCompat;
+import de.appplant.cordova.plugin.notification.action.Action;
 import java.util.List;
 import java.util.Random;
-import javax.naming.Context;
-import javax.swing.Action;
-import org.w3c.dom.css.Rect;
 
 /**
  * Builder class for local notifications. Build fully configured local
@@ -185,13 +185,7 @@ public final class Builder {
     applyDeleteReceiver(builder);
     applyContentReceiver(builder);
 
-    Notification notification = new Notification(context, options, builder);
-
-    if (options.getPrio()) {
-      context.startForegroundService(intent);
-      startForeground(request.getIdentifier(), notification);
-    }
-    return notification;
+    return new Notification(context, options, builder);
   }
 
   /**
