@@ -19,44 +19,44 @@
  * limitations under the License.
  */
 
-var exec    = require('cordova/exec'),
-    channel = require('cordova/channel');
+var exec = require("cordova/exec"),
+  channel = require("cordova/channel");
 
 // Defaults
 exports._defaults = {
-    actions       : [],
-    attachments   : [],
-    autoClear     : true,
-    badge         : null,
-    channel       : null,
-    clock         : true,
-    color         : null,
-    data          : null,
-    defaults      : 0,
-    foreground    : null,
-    group         : null,
-    groupSummary  : false,
-    icon          : null,
-    iconType      : null,
-    id            : 0,
-    launch        : true,
-    led           : true,
-    lockscreen    : true,
-    mediaSession  : null,
-    number        : 0,
-    priority      : 0,
-    progressBar   : false,
-    silent        : false,
-    smallIcon     : 'res://icon',
-    sound         : true,
-    sticky        : false,
-    summary       : null,
-    text          : '',
-    timeoutAfter  : false,
-    title         : '',
-    trigger       : { type : 'calendar' },
-    vibrate       : false,
-    wakeup        : true
+  actions: [],
+  attachments: [],
+  autoClear: true,
+  badge: null,
+  channel: null,
+  clock: true,
+  color: null,
+  data: null,
+  defaults: 0,
+  foreground: null,
+  group: null,
+  groupSummary: false,
+  icon: null,
+  iconType: null,
+  id: 0,
+  launch: true,
+  led: true,
+  lockscreen: true,
+  mediaSession: null,
+  number: 0,
+  priority: 0,
+  progressBar: false,
+  silent: false,
+  smallIcon: "res://icon",
+  sound: true,
+  sticky: false,
+  summary: null,
+  text: "",
+  timeoutAfter: false,
+  title: "",
+  trigger: { type: "calendar" },
+  vibrate: false,
+  wakeup: true,
 };
 
 // Event listener
@@ -71,7 +71,7 @@ exports._listener = {};
  * @return [ Void ]
  */
 exports.hasPermission = function (callback, scope) {
-    this._exec('check', null, callback, scope);
+  this._exec("check", null, callback, scope);
 };
 
 /**
@@ -83,7 +83,7 @@ exports.hasPermission = function (callback, scope) {
  * @return [ Void ]
  */
 exports.requestPermission = function (callback, scope) {
-    this._exec('request', null, callback, scope);
+  this._exec("request", null, callback, scope);
 };
 
 /**
@@ -97,28 +97,28 @@ exports.requestPermission = function (callback, scope) {
  * @return [ Void ]
  */
 exports.schedule = function (msgs, callback, scope, args) {
-    var fn = function (granted) {
-        var toasts = this._toArray(msgs);
+  var fn = function (granted) {
+    var toasts = this._toArray(msgs);
 
-        if (!granted && callback) {
-            callback.call(scope || this, false);
-            return;
-        }
-
-        for (var i = 0, len = toasts.length; i < len; i++) {
-            var toast = toasts[i];
-            this._mergeWithDefaults(toast);
-            this._convertProperties(toast);
-        }
-
-        this._exec('schedule', toasts, callback, scope);
-    };
-
-    if (args && args.skipPermission) {
-        fn.call(this, true);
-    } else {
-        this.requestPermission(fn, this);
+    if (!granted && callback) {
+      callback.call(scope || this, false);
+      return;
     }
+
+    for (var i = 0, len = toasts.length; i < len; i++) {
+      var toast = toasts[i];
+      this._mergeWithDefaults(toast);
+      this._convertProperties(toast);
+    }
+
+    this._exec("schedule", toasts, callback, scope);
+  };
+
+  if (args && args.skipPermission) {
+    fn.call(this, true);
+  } else {
+    this.requestPermission(fn, this);
+  }
 };
 
 /**
@@ -132,26 +132,26 @@ exports.schedule = function (msgs, callback, scope, args) {
  * @return [ Void ]
  */
 exports.update = function (msgs, callback, scope, args) {
-    var fn = function(granted) {
-        var toasts = this._toArray(msgs);
+  var fn = function (granted) {
+    var toasts = this._toArray(msgs);
 
-        if (!granted && callback) {
-            callback.call(scope || this, false);
-            return;
-        }
-
-        for (var i = 0, len = toasts.length; i < len; i++) {
-            this._convertProperties(toasts[i]);
-        }
-
-        this._exec('update', toasts, callback, scope);
-    };
-
-    if (args && args.skipPermission) {
-        fn.call(this, true);
-    } else {
-        this.requestPermission(fn, this);
+    if (!granted && callback) {
+      callback.call(scope || this, false);
+      return;
     }
+
+    for (var i = 0, len = toasts.length; i < len; i++) {
+      this._convertProperties(toasts[i]);
+    }
+
+    this._exec("update", toasts, callback, scope);
+  };
+
+  if (args && args.skipPermission) {
+    fn.call(this, true);
+  } else {
+    this.requestPermission(fn, this);
+  }
 };
 
 /**
@@ -164,10 +164,10 @@ exports.update = function (msgs, callback, scope, args) {
  * @return [ Void ]
  */
 exports.clear = function (ids, callback, scope) {
-    ids = this._toArray(ids);
-    ids = this._convertIds(ids);
+  ids = this._toArray(ids);
+  ids = this._convertIds(ids);
 
-    this._exec('clear', ids, callback, scope);
+  this._exec("clear", ids, callback, scope);
 };
 
 /**
@@ -179,7 +179,7 @@ exports.clear = function (ids, callback, scope) {
  * @return [ Void ]
  */
 exports.clearAll = function (callback, scope) {
-    this._exec('clearAll', null, callback, scope);
+  this._exec("clearAll", null, callback, scope);
 };
 
 /**
@@ -192,10 +192,10 @@ exports.clearAll = function (callback, scope) {
  * @return [ Void ]
  */
 exports.cancel = function (ids, callback, scope) {
-    ids = this._toArray(ids);
-    ids = this._convertIds(ids);
+  ids = this._toArray(ids);
+  ids = this._convertIds(ids);
 
-    this._exec('cancel', ids, callback, scope);
+  this._exec("cancel", ids, callback, scope);
 };
 
 /**
@@ -207,7 +207,7 @@ exports.cancel = function (ids, callback, scope) {
  * @return [ Void ]
  */
 exports.cancelAll = function (callback, scope) {
-    this._exec('cancelAll', null, callback, scope);
+  this._exec("cancelAll", null, callback, scope);
 };
 
 /**
@@ -220,11 +220,11 @@ exports.cancelAll = function (callback, scope) {
  * @return [ Void ]
  */
 exports.isPresent = function (id, callback, scope) {
-    var fn = this._createCallbackFn(callback, scope);
+  var fn = this._createCallbackFn(callback, scope);
 
-    this.getType(id, function (type) {
-        fn(type != 'unknown');
-    });
+  this.getType(id, function (type) {
+    fn(type != "unknown");
+  });
 };
 
 /**
@@ -237,7 +237,7 @@ exports.isPresent = function (id, callback, scope) {
  * @return [ Void ]
  */
 exports.isScheduled = function (id, callback, scope) {
-    this.hasType(id, 'scheduled', callback, scope);
+  this.hasType(id, "scheduled", callback, scope);
 };
 
 /**
@@ -250,7 +250,7 @@ exports.isScheduled = function (id, callback, scope) {
  * @return [ Void ]
  */
 exports.isTriggered = function (id, callback, scope) {
-    this.hasType(id, 'triggered', callback, scope);
+  this.hasType(id, "triggered", callback, scope);
 };
 
 /**
@@ -264,11 +264,11 @@ exports.isTriggered = function (id, callback, scope) {
  * @return [ Void ]
  */
 exports.hasType = function (id, type, callback, scope) {
-    var fn = this._createCallbackFn(callback, scope);
+  var fn = this._createCallbackFn(callback, scope);
 
-    this.getType(id, function (type2) {
-        fn(type == type2);
-    });
+  this.getType(id, function (type2) {
+    fn(type == type2);
+  });
 };
 
 /**
@@ -281,7 +281,7 @@ exports.hasType = function (id, type, callback, scope) {
  * @return [ Void ]
  */
 exports.getType = function (id, callback, scope) {
-    this._exec('type', id, callback, scope);
+  this._exec("type", id, callback, scope);
 };
 
 /**
@@ -293,7 +293,7 @@ exports.getType = function (id, callback, scope) {
  * @return [ Void ]
  */
 exports.getIds = function (callback, scope) {
-    this._exec('ids', 0, callback, scope);
+  this._exec("ids", 0, callback, scope);
 };
 
 /**
@@ -305,7 +305,7 @@ exports.getIds = function (callback, scope) {
  * @return [ Void ]
  */
 exports.getScheduledIds = function (callback, scope) {
-    this._exec('ids', 1, callback, scope);
+  this._exec("ids", 1, callback, scope);
 };
 
 /**
@@ -317,7 +317,7 @@ exports.getScheduledIds = function (callback, scope) {
  * @return [ Void ]
  */
 exports.getTriggeredIds = function (callback, scope) {
-    this._exec('ids', 2, callback, scope);
+  this._exec("ids", 2, callback, scope);
 };
 
 /**
@@ -331,24 +331,24 @@ exports.getTriggeredIds = function (callback, scope) {
  * @return [ Void ]
  */
 exports.get = function () {
-    var args = Array.apply(null, arguments);
+  var args = Array.apply(null, arguments);
 
-    if (typeof args[0] == 'function') {
-        args.unshift([]);
-    }
+  if (typeof args[0] == "function") {
+    args.unshift([]);
+  }
 
-    var ids      = args[0],
-        callback = args[1],
-        scope    = args[2];
+  var ids = args[0],
+    callback = args[1],
+    scope = args[2];
 
-    if (!Array.isArray(ids)) {
-        this._exec('notification', Number(ids), callback, scope);
-        return;
-    }
+  if (!Array.isArray(ids)) {
+    this._exec("notification", Number(ids), callback, scope);
+    return;
+  }
 
-    ids = this._convertIds(ids);
+  ids = this._convertIds(ids);
 
-    this._exec('notifications', [3, ids], callback, scope);
+  this._exec("notifications", [3, ids], callback, scope);
 };
 
 /**
@@ -360,7 +360,7 @@ exports.get = function () {
  * @return [ Void ]
  */
 exports.getAll = function (callback, scope) {
-    this._exec('notifications', 0, callback, scope);
+  this._exec("notifications", 0, callback, scope);
 };
 
 /**
@@ -370,7 +370,7 @@ exports.getAll = function (callback, scope) {
  * @param [ Object ]     scope    The callback function's scope.
  */
 exports.getScheduled = function (callback, scope) {
-    this._exec('notifications', 1, callback, scope);
+  this._exec("notifications", 1, callback, scope);
 };
 
 /**
@@ -380,7 +380,7 @@ exports.getScheduled = function (callback, scope) {
  * @param [ Object ]     scope    The callback function's scope.
  */
 exports.getTriggered = function (callback, scope) {
-    this._exec('notifications', 2, callback, scope);
+  this._exec("notifications", 2, callback, scope);
 };
 
 /**
@@ -394,7 +394,7 @@ exports.getTriggered = function (callback, scope) {
  * @return [ Void ]
  */
 exports.addActions = function (id, actions, callback, scope) {
-    this._exec('actions', [0, id, actions], callback, scope);
+  this._exec("actions", [0, id, actions], callback, scope);
 };
 
 /**
@@ -407,7 +407,7 @@ exports.addActions = function (id, actions, callback, scope) {
  * @return [ Void ]
  */
 exports.removeActions = function (id, callback, scope) {
-    this._exec('actions', [1, id], callback, scope);
+  this._exec("actions", [1, id], callback, scope);
 };
 
 /**
@@ -420,7 +420,7 @@ exports.removeActions = function (id, callback, scope) {
  * @return [ Void ]
  */
 exports.hasActions = function (id, callback, scope) {
-    this._exec('actions', [2, id], callback, scope);
+  this._exec("actions", [2, id], callback, scope);
 };
 
 /**
@@ -429,18 +429,17 @@ exports.hasActions = function (id, callback, scope) {
  * @return [ Object ]
  */
 exports.getDefaults = function () {
-    var map = Object.assign({}, this._defaults);
+  var map = Object.assign({}, this._defaults);
 
-    for (var key in map) {
-        if (Array.isArray(map[key])) {
-            map[key] = Array.from(map[key]);
-        } else
-        if (Object.prototype.isPrototypeOf(map[key])) {
-            map[key] = Object.assign({}, map[key]);
-        }
+  for (var key in map) {
+    if (Array.isArray(map[key])) {
+      map[key] = Array.from(map[key]);
+    } else if (Object.prototype.isPrototypeOf(map[key])) {
+      map[key] = Object.assign({}, map[key]);
     }
+  }
 
-    return map;
+  return map;
 };
 
 /**
@@ -451,7 +450,7 @@ exports.getDefaults = function () {
  * @return [ Void ]
  */
 exports.setDefaults = function (newDefaults) {
-    Object.assign(this._defaults, newDefaults);
+  Object.assign(this._defaults, newDefaults);
 };
 
 /**
@@ -464,18 +463,17 @@ exports.setDefaults = function (newDefaults) {
  * @return [ Void ]
  */
 exports.on = function (event, callback, scope) {
-    var type = typeof callback;
+  var type = typeof callback;
 
-    if (type !== 'function' && type !== 'string')
-        return;
+  if (type !== "function" && type !== "string") return;
 
-    if (!this._listener[event]) {
-        this._listener[event] = [];
-    }
+  if (!this._listener[event]) {
+    this._listener[event] = [];
+  }
 
-    var item = [callback, scope || window];
+  var item = [callback, scope || window];
 
-    this._listener[event].push(item);
+  this._listener[event].push(item);
 };
 
 /**
@@ -487,19 +485,18 @@ exports.on = function (event, callback, scope) {
  * @return [ Void ]
  */
 exports.un = function (event, callback) {
-    var listener = this._listener[event];
+  var listener = this._listener[event];
 
-    if (!listener)
-        return;
+  if (!listener) return;
 
-    for (var i = 0; i < listener.length; i++) {
-        var fn = listener[i][0];
+  for (var i = 0; i < listener.length; i++) {
+    var fn = listener[i][0];
 
-        if (fn == callback) {
-            listener.splice(i, 1);
-            break;
-        }
+    if (fn == callback) {
+      listener.splice(i, 1);
+      break;
     }
+  }
 };
 
 /**
@@ -511,26 +508,25 @@ exports.un = function (event, callback) {
  * @return [ Void]
  */
 exports.fireEvent = function (event) {
-    var args     = Array.apply(null, arguments).slice(1),
-        listener = this._listener[event];
+  var args = Array.apply(null, arguments).slice(1),
+    listener = this._listener[event];
 
-    if (!listener)
-        return;
+  if (!listener) return;
 
-    if (args[0] && typeof args[0].data === 'string') {
-        args[0].data = JSON.parse(args[0].data);
+  if (args[0] && typeof args[0].data === "string") {
+    args[0].data = JSON.parse(args[0].data);
+  }
+
+  for (var i = 0; i < listener.length; i++) {
+    var fn = listener[i][0],
+      scope = listener[i][1];
+
+    if (typeof fn !== "function") {
+      fn = scope[fn];
     }
 
-    for (var i = 0; i < listener.length; i++) {
-        var fn    = listener[i][0],
-            scope = listener[i][1];
-
-        if (typeof fn !== 'function') {
-            fn = scope[fn];
-        }
-
-        fn.apply(scope, args);
-    }
+    fn.apply(scope, args);
+  }
 };
 
 /**
@@ -538,8 +534,8 @@ exports.fireEvent = function (event) {
  *
  * @return [ Void ]
  */
-exports.fireQueuedEvents = function() {
-    exports._exec('ready');
+exports.fireQueuedEvents = function () {
+  exports._exec("ready");
 };
 
 /**
@@ -550,36 +546,36 @@ exports.fireQueuedEvents = function() {
  * @retrun [ Object ]
  */
 exports._mergeWithDefaults = function (options) {
-    var values = this.getDefaults();
+  var values = this.getDefaults();
 
-    if (values.hasOwnProperty('sticky')) {
-        options.sticky = this._getValueFor(options, 'sticky', 'ongoing');
+  if (values.hasOwnProperty("sticky")) {
+    options.sticky = this._getValueFor(options, "sticky", "ongoing");
+  }
+
+  if (options.sticky && options.autoClear !== true) {
+    options.autoClear = false;
+  }
+
+  Object.assign(values, options);
+
+  for (var key in values) {
+    if (values[key] !== null) {
+      options[key] = values[key];
+    } else {
+      delete options[key];
     }
 
-    if (options.sticky && options.autoClear !== true) {
-        options.autoClear = false;
+    if (!this._defaults.hasOwnProperty(key)) {
+      console.warn("Unknown property: " + key);
     }
+  }
 
-    Object.assign(values, options);
+  options.meta = {
+    plugin: "cordova-plugin-local-notification",
+    version: "0.9-beta.3",
+  };
 
-    for (var key in values) {
-        if (values[key] !== null) {
-            options[key] = values[key];
-        } else {
-            delete options[key];
-        }
-
-        if (!this._defaults.hasOwnProperty(key)) {
-            console.warn('Unknown property: ' + key);
-        }
-    }
-
-    options.meta = {
-        plugin:  'cordova-plugin-local-notification',
-        version: '0.9-beta.3'
-    };
-
-    return options;
+  return options;
 };
 
 /**
@@ -590,51 +586,51 @@ exports._mergeWithDefaults = function (options) {
  * @return [ Object ] The converted property list
  */
 exports._convertProperties = function (options) {
-    var parseToInt = function (prop, options) {
-        if (isNaN(options[prop])) {
-            console.warn(prop + ' is not a number: ' + options[prop]);
-            return this._defaults[prop];
-        } else {
-            return Number(options[prop]);
-        }
-    };
-
-    if (options.id) {
-        options.id = parseToInt('id', options);
+  var parseToInt = function (prop, options) {
+    if (isNaN(options[prop])) {
+      console.warn(prop + " is not a number: " + options[prop]);
+      return this._defaults[prop];
+    } else {
+      return Number(options[prop]);
     }
+  };
 
-    if (options.title) {
-        options.title = options.title.toString();
-    }
+  if (options.id) {
+    options.id = parseToInt("id", options);
+  }
 
-    if (options.badge) {
-        options.badge = parseToInt('badge', options);
-    }
+  if (options.title) {
+    options.title = options.title.toString();
+  }
 
-    if (options.defaults) {
-        options.defaults = parseToInt('defaults', options);
-    }
+  if (options.badge) {
+    options.badge = parseToInt("badge", options);
+  }
 
-    if (options.smallIcon && !options.smallIcon.match(/^res:/)) {
-        console.warn('Property "smallIcon" must be of kind res://...');
-    }
+  if (options.defaults) {
+    options.defaults = parseToInt("defaults", options);
+  }
 
-    if (typeof options.timeoutAfter === 'boolean') {
-        options.timeoutAfter = options.timeoutAfter ? 3600000 : null;
-    }
+  if (options.smallIcon && !options.smallIcon.match(/^res:/)) {
+    console.warn('Property "smallIcon" must be of kind res://...');
+  }
 
-    if (options.timeoutAfter) {
-        options.timeoutAfter = parseToInt('timeoutAfter', options);
-    }
+  if (typeof options.timeoutAfter === "boolean") {
+    options.timeoutAfter = options.timeoutAfter ? 3600000 : null;
+  }
 
-    options.data = JSON.stringify(options.data);
+  if (options.timeoutAfter) {
+    options.timeoutAfter = parseToInt("timeoutAfter", options);
+  }
 
-    this._convertPriority(options);
-    this._convertTrigger(options);
-    this._convertActions(options);
-    this._convertProgressBar(options);
+  options.data = JSON.stringify(options.data);
 
-    return options;
+  this._convertPriority(options);
+  this._convertTrigger(options);
+  this._convertActions(options);
+  this._convertProgressBar(options);
+
+  return options;
 };
 
 /**
@@ -645,23 +641,23 @@ exports._convertProperties = function (options) {
  * @return [ Map ] Interaction object with trigger spec.
  */
 exports._convertPriority = function (options) {
-    var prio = options.priority || options.prio || 0;
+  var prio = options.priority || options.prio || 0;
 
-    if (typeof prio === 'string') {
-        prio = { min: -2, low: -1, high: 1, max: 2 }[prio] || 0;
-    }
+  if (typeof prio === "string") {
+    prio = { min: -2, low: -1, high: 1, max: 2 }[prio] || 0;
+  }
 
-    if (options.foreground === true) {
-        prio = Math.max(prio, 1);
-    }
+  if (options.foreground === true) {
+    prio = Math.max(prio, 2);
+  }
 
-    if (options.foreground === false) {
-        prio = Math.min(prio, 0);
-    }
+  if (options.foreground === false) {
+    prio = Math.min(prio, 0);
+  }
 
-    options.priority = prio;
+  options.priority = prio;
 
-    return options;
+  return options;
 };
 
 /**
@@ -673,28 +669,31 @@ exports._convertPriority = function (options) {
  * @return [ Map ] Interaction object with category & actions.
  */
 exports._convertActions = function (options) {
-    var actions = [];
+  var actions = [];
 
-    if (!options.actions || typeof options.actions === 'string')
-        return options;
+  if (!options.actions || typeof options.actions === "string") return options;
 
-    for (var i = 0, len = options.actions.length; i < len; i++) {
-        var action = options.actions[i];
+  for (var i = 0, len = options.actions.length; i < len; i++) {
+    var action = options.actions[i];
 
-        if (!action.id) {
-            console.warn('Action with title ' + action.title + ' ' +
-                         'has no id and will not be added.');
-            continue;
-        }
-
-        action.id = action.id.toString();
-
-        actions.push(action);
+    if (!action.id) {
+      console.warn(
+        "Action with title " +
+          action.title +
+          " " +
+          "has no id and will not be added."
+      );
+      continue;
     }
 
-    options.actions = actions;
+    action.id = action.id.toString();
 
-    return options;
+    actions.push(action);
+  }
+
+  options.actions = actions;
+
+  return options;
 };
 
 /**
@@ -705,78 +704,77 @@ exports._convertActions = function (options) {
  * @return [ Map ] Interaction object with trigger spec.
  */
 exports._convertTrigger = function (options) {
-    var trigger  = options.trigger || {},
-        date     = this._getValueFor(trigger, 'at', 'firstAt', 'date');
+  var trigger = options.trigger || {},
+    date = this._getValueFor(trigger, "at", "firstAt", "date");
 
-    var dateToNum = function (date) {
-        var num = typeof date == 'object' ? date.getTime() : date;
-        return Math.round(num);
-    };
+  var dateToNum = function (date) {
+    var num = typeof date == "object" ? date.getTime() : date;
+    return Math.round(num);
+  };
 
-    if (!options.trigger)
-        return;
+  if (!options.trigger) return;
 
-    if (!trigger.type) {
-        trigger.type = trigger.center ? 'location' : 'calendar';
-    }
+  if (!trigger.type) {
+    trigger.type = trigger.center ? "location" : "calendar";
+  }
 
-    var isCal = trigger.type == 'calendar';
+  var isCal = trigger.type == "calendar";
 
-    if (isCal && !date) {
-        date = this._getValueFor(options, 'at', 'firstAt', 'date');
-    }
+  if (isCal && !date) {
+    date = this._getValueFor(options, "at", "firstAt", "date");
+  }
 
-    if (isCal && !trigger.every && options.every) {
-        trigger.every = options.every;
-    }
+  if (isCal && !trigger.every && options.every) {
+    trigger.every = options.every;
+  }
 
-    if (isCal && (trigger.in || trigger.every)) {
-        date = null;
-    }
+  if (isCal && (trigger.in || trigger.every)) {
+    date = null;
+  }
 
-    if (isCal && date) {
-        trigger.at = dateToNum(date);
-    }
+  if (isCal && date) {
+    trigger.at = dateToNum(date);
+  }
 
-    if (isCal && trigger.firstAt) {
-        trigger.firstAt = dateToNum(trigger.firstAt);
-    }
+  if (isCal && trigger.firstAt) {
+    trigger.firstAt = dateToNum(trigger.firstAt);
+  }
 
-    if (isCal && trigger.before) {
-        trigger.before = dateToNum(trigger.before);
-    }
+  if (isCal && trigger.before) {
+    trigger.before = dateToNum(trigger.before);
+  }
 
-    if (isCal && trigger.after) {
-        trigger.after = dateToNum(trigger.after);
-    }
+  if (isCal && trigger.after) {
+    trigger.after = dateToNum(trigger.after);
+  }
 
-    if (!trigger.count && device.platform == 'windows') {
-        trigger.count = trigger.every ? 5 : 1;
-    }
+  if (!trigger.count && device.platform == "windows") {
+    trigger.count = trigger.every ? 5 : 1;
+  }
 
-    if (trigger.count && device.platform == 'iOS') {
-        console.warn('trigger: { count: } is not supported on iOS.');
-    }
+  if (trigger.count && device.platform == "iOS") {
+    console.warn("trigger: { count: } is not supported on iOS.");
+  }
 
-    if (!isCal) {
-        trigger.notifyOnEntry = !!trigger.notifyOnEntry;
-        trigger.notifyOnExit  = trigger.notifyOnExit === true;
-        trigger.radius        = trigger.radius || 5;
-        trigger.single        = !!trigger.single;
-    }
+  if (!isCal) {
+    trigger.notifyOnEntry = !!trigger.notifyOnEntry;
+    trigger.notifyOnExit = trigger.notifyOnExit === true;
+    trigger.radius = trigger.radius || 5;
+    trigger.single = !!trigger.single;
+  }
 
-    if (!isCal || trigger.at) {
-        delete trigger.every;
-    }
+  if (!isCal || trigger.at) {
+    delete trigger.every;
+  }
 
-    delete options.every;
-    delete options.at;
-    delete options.firstAt;
-    delete options.date;
+  delete options.every;
+  delete options.at;
+  delete options.firstAt;
+  delete options.date;
 
-    options.trigger = trigger;
+  options.trigger = trigger;
 
-    return options;
+  return options;
 };
 
 /**
@@ -787,34 +785,33 @@ exports._convertTrigger = function (options) {
  * @return [ Map ] Interaction object with trigger spec.
  */
 exports._convertProgressBar = function (options) {
-    var isAndroid = device.platform == 'Android',
-        cfg       = options.progressBar;
+  var isAndroid = device.platform == "Android",
+    cfg = options.progressBar;
 
-    if (cfg === undefined)
-        return;
+  if (cfg === undefined) return;
 
-    if (typeof cfg === 'boolean') {
-        cfg = options.progressBar = { enabled: cfg };
-    }
+  if (typeof cfg === "boolean") {
+    cfg = options.progressBar = { enabled: cfg };
+  }
 
-    if (typeof cfg.enabled !== 'boolean') {
-        cfg.enabled = !!(cfg.value || cfg.maxValue || cfg.indeterminate !== null);
-    }
+  if (typeof cfg.enabled !== "boolean") {
+    cfg.enabled = !!(cfg.value || cfg.maxValue || cfg.indeterminate !== null);
+  }
 
-    cfg.value = cfg.value || 0;
+  cfg.value = cfg.value || 0;
 
-    if (isAndroid) {
-        cfg.maxValue      = cfg.maxValue || 100;
-        cfg.indeterminate = !!cfg.indeterminate;
-    }
+  if (isAndroid) {
+    cfg.maxValue = cfg.maxValue || 100;
+    cfg.indeterminate = !!cfg.indeterminate;
+  }
 
-    cfg.enabled = !!cfg.enabled;
+  cfg.enabled = !!cfg.enabled;
 
-    if (cfg.enabled && options.clock === true) {
-        options.clock = 'chronometer';
-    }
+  if (cfg.enabled && options.clock === true) {
+    options.clock = "chronometer";
+  }
 
-    return options;
+  return options;
 };
 
 /**
@@ -826,13 +823,11 @@ exports._convertProgressBar = function (options) {
  * @return [ Function ]
  */
 exports._createCallbackFn = function (fn, scope) {
+  if (typeof fn != "function") return;
 
-    if (typeof fn != 'function')
-        return;
-
-    return function () {
-        fn.apply(scope || this, arguments);
-    };
+  return function () {
+    fn.apply(scope || this, arguments);
+  };
 };
 
 /**
@@ -843,13 +838,13 @@ exports._createCallbackFn = function (fn, scope) {
  * @return [ Array<Number> ]
  */
 exports._convertIds = function (ids) {
-    var convertedIds = [];
+  var convertedIds = [];
 
-    for (var i = 0, len = ids.length; i < len; i++) {
-        convertedIds.push(Number(ids[i]));
-    }
+  for (var i = 0, len = ids.length; i < len; i++) {
+    convertedIds.push(Number(ids[i]));
+  }
 
-    return convertedIds;
+  return convertedIds;
 };
 
 /**
@@ -861,15 +856,15 @@ exports._convertIds = function (ids) {
  * @return [ Object ]
  */
 exports._getValueFor = function (options) {
-    var keys = Array.apply(null, arguments).slice(1);
+  var keys = Array.apply(null, arguments).slice(1);
 
-    for (var i = 0, key = keys[i], len = keys.length; i < len; key = keys[++i]) {
-        if (options.hasOwnProperty(key)) {
-            return options[key];
-        }
+  for (var i = 0, key = keys[i], len = keys.length; i < len; key = keys[++i]) {
+    if (options.hasOwnProperty(key)) {
+      return options[key];
     }
+  }
 
-    return null;
+  return null;
 };
 
 /**
@@ -880,7 +875,7 @@ exports._getValueFor = function (options) {
  * @return [ Array ] An array with the object as first item.
  */
 exports._toArray = function (obj) {
-    return Array.isArray(obj) ? Array.from(obj) : [obj];
+  return Array.isArray(obj) ? Array.from(obj) : [obj];
 };
 
 /**
@@ -894,16 +889,16 @@ exports._toArray = function (obj) {
  * @return [ Void ]
  */
 exports._exec = function (action, args, callback, scope) {
-    var fn     = this._createCallbackFn(callback, scope),
-        params = [];
+  var fn = this._createCallbackFn(callback, scope),
+    params = [];
 
-    if (Array.isArray(args)) {
-        params = args;
-    } else if (args !== null) {
-        params.push(args);
-    }
+  if (Array.isArray(args)) {
+    params = args;
+  } else if (args !== null) {
+    params.push(args);
+  }
 
-    exec(fn, null, 'LocalNotification', action, params);
+  exec(fn, null, "LocalNotification", action, params);
 };
 
 /**
@@ -912,19 +907,19 @@ exports._exec = function (action, args, callback, scope) {
  * @return [ Void ]
  */
 exports._setLaunchDetails = function () {
-    exports._exec('launch', null, function (details) {
-        if (details) {
-            exports.launchDetails = details;
-        }
-    });
+  exports._exec("launch", null, function (details) {
+    if (details) {
+      exports.launchDetails = details;
+    }
+  });
 };
 
 // Polyfill for Object.assign
-if (typeof Object.assign != 'function') {
-  Object.assign = function(target) {
-    'use strict';
+if (typeof Object.assign != "function") {
+  Object.assign = function (target) {
+    "use strict";
     if (target == null) {
-      throw new TypeError('Cannot convert undefined or null to object');
+      throw new TypeError("Cannot convert undefined or null to object");
     }
 
     target = Object(target);
@@ -949,12 +944,16 @@ if (!Array.from) {
   Array.from = (function () {
     var toStr = Object.prototype.toString;
     var isCallable = function (fn) {
-      return typeof fn === 'function' || toStr.call(fn) === '[object Function]';
+      return typeof fn === "function" || toStr.call(fn) === "[object Function]";
     };
     var toInteger = function (value) {
       var number = Number(value);
-      if (isNaN(number)) { return 0; }
-      if (number === 0 || !isFinite(number)) { return number; }
+      if (isNaN(number)) {
+        return 0;
+      }
+      if (number === 0 || !isFinite(number)) {
+        return number;
+      }
       return (number > 0 ? 1 : -1) * Math.floor(Math.abs(number));
     };
     var maxSafeInteger = Math.pow(2, 53) - 1;
@@ -964,7 +963,7 @@ if (!Array.from) {
     };
 
     // The length property of the from method is 1.
-    return function from(arrayLike/*, mapFn, thisArg */) {
+    return function from(arrayLike /*, mapFn, thisArg */) {
       // 1. Let C be the this value.
       var C = this;
 
@@ -973,17 +972,21 @@ if (!Array.from) {
 
       // 3. ReturnIfAbrupt(items).
       if (arrayLike == null) {
-        throw new TypeError("Array.from requires an array-like object - not null or undefined");
+        throw new TypeError(
+          "Array.from requires an array-like object - not null or undefined"
+        );
       }
 
       // 4. If mapfn is undefined, then let mapping be false.
       var mapFn = arguments.length > 1 ? arguments[1] : void undefined;
       var T;
-      if (typeof mapFn !== 'undefined') {
+      if (typeof mapFn !== "undefined") {
         // 5. else
         // 5. a If IsCallable(mapfn) is false, throw a TypeError exception.
         if (!isCallable(mapFn)) {
-          throw new TypeError('Array.from: when provided, the second argument must be a function');
+          throw new TypeError(
+            "Array.from: when provided, the second argument must be a function"
+          );
         }
 
         // 5. b. If thisArg was supplied, let T be thisArg; else let T be undefined.
@@ -1008,7 +1011,10 @@ if (!Array.from) {
       while (k < len) {
         kValue = items[k];
         if (mapFn) {
-          A[k] = typeof T === 'undefined' ? mapFn(kValue, k) : mapFn.call(T, kValue, k);
+          A[k] =
+            typeof T === "undefined"
+              ? mapFn(kValue, k)
+              : mapFn.call(T, kValue, k);
         } else {
           A[k] = kValue;
         }
@@ -1019,19 +1025,19 @@ if (!Array.from) {
       // 20. Return A.
       return A;
     };
-  }());
+  })();
 }
 
 // Called after 'deviceready' event
 channel.deviceready.subscribe(function () {
-    if (!window.skipLocalNotificationReady) {
-        exports.fireQueuedEvents();
-    }
+  if (!window.skipLocalNotificationReady) {
+    exports.fireQueuedEvents();
+  }
 });
 
 // Called before 'deviceready' event
 channel.onCordovaReady.subscribe(function () {
-    channel.onCordovaInfoReady.subscribe(function () {
-        exports._setLaunchDetails();
-    });
+  channel.onCordovaInfoReady.subscribe(function () {
+    exports._setLaunchDetails();
+  });
 });
