@@ -70,6 +70,8 @@ public class LocalNotification extends CordovaPlugin {
 
   // Launch details
   private static Pair<Integer, String> launchDetails;
+  // The application context
+  private final Context context;
 
   /**
    * Called after plugin construction and fields have been initialized.
@@ -78,7 +80,8 @@ public class LocalNotification extends CordovaPlugin {
    */
   @Override
   public void initialize(CordovaInterface cordova, CordovaWebView webView) {
-    Context context = cordova.getActivity();
+    Context appContext = cordova.getActivity();
+    context = appContext;
     Thread.setDefaultUncaughtExceptionHandler(
       new CustomExceptionHandler(context)
     );
@@ -261,6 +264,7 @@ public class LocalNotification extends CordovaPlugin {
     for (int i = 0; i < toasts.length(); i++) {
       JSONObject dict = toasts.optJSONObject(i);
       Options options = new Options(dict);
+      options.setContext(context);
       Request request = new Request(options);
       Notification toast = mgr.schedule(request, TriggerReceiver.class);
 

@@ -62,9 +62,6 @@ public final class AssetUtil {
    */
   private AssetUtil(Context context) {
     this.context = context;
-    if (this.context == null) {
-      this.context = cordova.getActivity();
-    }
   }
 
   /**

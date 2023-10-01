@@ -106,6 +106,10 @@ public final class Options {
     return context;
   }
 
+  public Context setContext(Context context) {
+    this.context = context;
+  }
+
   /**
    * Wrapped JSON object.
    */
