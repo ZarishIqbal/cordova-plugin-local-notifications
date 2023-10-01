@@ -71,7 +71,7 @@ public final class Options {
   private final JSONObject options;
 
   // The application context
-  private final Context context;
+  private Context context;
 
   // Asset util instance
   private final AssetUtil assets;

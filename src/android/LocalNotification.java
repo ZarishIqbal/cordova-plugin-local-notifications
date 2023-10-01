@@ -71,7 +71,7 @@ public class LocalNotification extends CordovaPlugin {
   // Launch details
   private static Pair<Integer, String> launchDetails;
   // The application context
-  private final Context context;
+  private Context context;
 
   /**
    * Called after plugin construction and fields have been initialized.
