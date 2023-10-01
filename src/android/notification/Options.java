@@ -106,8 +106,8 @@ public final class Options {
     return context;
   }
 
-  public Context setContext(Context context) {
-    this.context = context;
+  public void setContext(Context appContext) {
+    context = appContext;
   }
 
   /**
