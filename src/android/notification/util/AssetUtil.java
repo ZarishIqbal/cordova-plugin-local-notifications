@@ -30,7 +30,6 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.StrictMode;
 import android.util.Log;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -49,323 +48,324 @@ import java.util.UUID;
  */
 public final class AssetUtil {
 
-    // Name of the storage folder
-    private static final String STORAGE_FOLDER = "/localnotification";
+  // Name of the storage folder
+  private static final String STORAGE_FOLDER = "/localnotification";
 
-    // Ref to the context passed through the constructor to access the
-    // resources and app directory.
-    private final Context context;
+  // Ref to the context passed through the constructor to access the
+  // resources and app directory.
+  private final Context context;
 
-    /**
-     * Constructor
-     *
-     * @param context Application context.
-     */
-    private AssetUtil(Context context) {
-        this.context = context;
+  /**
+   * Constructor
+   *
+   * @param context Application context.
+   */
+  private AssetUtil(Context context) {
+    this.context = context;
+  }
+
+  /**
+   * Static method to retrieve class instance.
+   *
+   * @param context Application context.
+   */
+  public static AssetUtil getInstance(Context context) {
+    return new AssetUtil(context);
+  }
+
+  /**
+   * The URI for a path.
+   *
+   * @param path The given path.
+   */
+  public Uri parse(String path) {
+    if (path == null || path.isEmpty()) {
+      return Uri.EMPTY;
+    } else if (path.startsWith("res:")) {
+      return getUriForResourcePath(path);
+    } else if (path.startsWith("file:///")) {
+      return getUriFromPath(path);
+    } else if (path.startsWith("file://")) {
+      return getUriFromAsset(path);
+    } else if (path.startsWith("http")) {
+      return getUriFromRemote(path);
+    } else if (path.startsWith("content://")) {
+      return Uri.parse(path);
     }
 
-    /**
-     * Static method to retrieve class instance.
-     *
-     * @param context Application context.
-     */
-    public static AssetUtil getInstance(Context context) {
-        return new AssetUtil(context);
+    return Uri.EMPTY;
+  }
+
+  /**
+   * URI for a file.
+   *
+   * @param path Absolute path like file:///...
+   *
+   * @return URI pointing to the given path.
+   */
+  private Uri getUriFromPath(String path) {
+    String absPath = path
+      .replaceFirst("file://", "")
+      .replaceFirst("\\?.*$", "");
+    File file = new File(absPath);
+
+    if (!file.exists()) {
+      Log.e("Asset", "File not found: " + file.getAbsolutePath());
+      return Uri.EMPTY;
     }
 
-    /**
-     * The URI for a path.
-     *
-     * @param path The given path.
-     */
-    public Uri parse (String path) {
-        if (path == null || path.isEmpty()) {
-            return Uri.EMPTY;
-        } else if (path.startsWith("res:")) {
-            return getUriForResourcePath(path);
-        } else if (path.startsWith("file:///")) {
-            return getUriFromPath(path);
-        } else if (path.startsWith("file://")) {
-            return getUriFromAsset(path);
-        } else if (path.startsWith("http")){
-            return getUriFromRemote(path);
-        } else if (path.startsWith("content://")){
-            return Uri.parse(path);
-        }
+    return getUriFromFile(file);
+  }
 
-        return Uri.EMPTY;
+  /**
+   * URI for an asset.
+   *
+   * @param path Asset path like file://...
+   *
+   * @return URI pointing to the given path.
+   */
+  private Uri getUriFromAsset(String path) {
+    String resPath = path
+      .replaceFirst("file:/", "www")
+      .replaceFirst("\\?.*$", "");
+    String fileName = resPath.substring(resPath.lastIndexOf('/') + 1);
+    File file = getTmpFile(fileName);
+
+    if (file == null) return Uri.EMPTY;
+
+    try {
+      AssetManager assets = context.getAssets();
+      InputStream in = assets.open(resPath);
+      FileOutputStream out = new FileOutputStream(file);
+      copyFile(in, out);
+    } catch (Exception e) {
+      Log.e("Asset", "File not found: assets/" + resPath);
+      e.printStackTrace();
+      return Uri.EMPTY;
     }
 
-    /**
-     * URI for a file.
-     *
-     * @param path Absolute path like file:///...
-     *
-     * @return URI pointing to the given path.
-     */
-    private Uri getUriFromPath(String path) {
-        String absPath = path.replaceFirst("file://", "")
-                .replaceFirst("\\?.*$", "");
-        File file      = new File(absPath);
+    return getUriFromFile(file);
+  }
 
-        if (!file.exists()) {
-            Log.e("Asset", "File not found: " + file.getAbsolutePath());
-            return Uri.EMPTY;
-        }
+  /**
+   * The URI for a resource.
+   *
+   * @param path The given relative path.
+   *
+   * @return URI pointing to the given path.
+   */
+  private Uri getUriForResourcePath(String path) {
+    Resources res = context.getResources();
+    String resPath = path.replaceFirst("res://", "");
+    int resId = getResId(resPath);
 
-        return getUriFromFile(file);
+    if (resId == 0) {
+      Log.e("Asset", "File not found: " + resPath);
+      return Uri.EMPTY;
     }
 
-    /**
-     * URI for an asset.
-     *
-     * @param path Asset path like file://...
-     *
-     * @return URI pointing to the given path.
-     */
-    private Uri getUriFromAsset(String path) {
-        String resPath  = path.replaceFirst("file:/", "www")
-                .replaceFirst("\\?.*$", "");
-        String fileName = resPath.substring(resPath.lastIndexOf('/') + 1);
-        File file       = getTmpFile(fileName);
+    return new Uri.Builder()
+      .scheme(ContentResolver.SCHEME_ANDROID_RESOURCE)
+      .authority(res.getResourcePackageName(resId))
+      .appendPath(res.getResourceTypeName(resId))
+      .appendPath(res.getResourceEntryName(resId))
+      .build();
+  }
 
-        if (file == null)
-            return Uri.EMPTY;
+  /**
+   * Uri from remote located content.
+   *
+   * @param path Remote address.
+   *
+   * @return Uri of the downloaded file.
+   */
+  private Uri getUriFromRemote(String path) {
+    File file = getTmpFile();
 
-        try {
-            AssetManager assets  = context.getAssets();
-            InputStream in       = assets.open(resPath);
-            FileOutputStream out = new FileOutputStream(file);
-            copyFile(in, out);
-        } catch (Exception e) {
-            Log.e("Asset", "File not found: assets/" + resPath);
-            e.printStackTrace();
-            return Uri.EMPTY;
-        }
+    if (file == null) return Uri.EMPTY;
 
-        return getUriFromFile(file);
+    try {
+      URL url = new URL(path);
+      HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+      StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+        .permitAll()
+        .build();
+
+      StrictMode.setThreadPolicy(policy);
+
+      connection.setRequestProperty("Connection", "close");
+      connection.setConnectTimeout(5000);
+      connection.connect();
+
+      InputStream in = connection.getInputStream();
+      FileOutputStream out = new FileOutputStream(file);
+
+      copyFile(in, out);
+      return getUriFromFile(file);
+    } catch (MalformedURLException e) {
+      Log.e("Asset", "Incorrect URL");
+      e.printStackTrace();
+    } catch (FileNotFoundException e) {
+      Log.e("Asset", "Failed to create new File from HTTP Content");
+      e.printStackTrace();
+    } catch (IOException e) {
+      Log.e("Asset", "No Input can be created from http Stream");
+      e.printStackTrace();
     }
 
-    /**
-     * The URI for a resource.
-     *
-     * @param path The given relative path.
-     *
-     * @return URI pointing to the given path.
-     */
-    private Uri getUriForResourcePath(String path) {
-        Resources res  = context.getResources();
-        String resPath = path.replaceFirst("res://", "");
-        int resId      = getResId(resPath);
+    return Uri.EMPTY;
+  }
 
-        if (resId == 0) {
-            Log.e("Asset", "File not found: " + resPath);
-            return Uri.EMPTY;
-        }
+  /**
+   * Copy content from input stream into output stream.
+   *
+   * @param in  The input stream.
+   * @param out The output stream.
+   */
+  private void copyFile(InputStream in, FileOutputStream out) {
+    byte[] buffer = new byte[1024];
+    int read;
 
-        return new Uri.Builder()
-                .scheme(ContentResolver.SCHEME_ANDROID_RESOURCE)
-                .authority(res.getResourcePackageName(resId))
-                .appendPath(res.getResourceTypeName(resId))
-                .appendPath(res.getResourceEntryName(resId))
-                .build();
+    try {
+      while ((read = in.read(buffer)) != -1) {
+        out.write(buffer, 0, read);
+      }
+      out.flush();
+      out.close();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+  /**
+   * Resource ID for drawable.
+   *
+   * @param resPath Resource path as string.
+   *
+   * @return The resource ID or 0 if not found.
+   */
+  public int getResId(String resPath) {
+    int resId = getResId(context.getResources(), resPath);
+
+    return resId;
+  }
+
+  /**
+   * Get resource ID.
+   *
+   * @param res     The resources where to look for.
+   * @param resPath The name of the resource.
+   *
+   * @return The resource ID or 0 if not found.
+   */
+  private int getResId(Resources res, String resPath) {
+    String pkgName = getPkgName(res);
+    String resName = getBaseName(resPath);
+    int resId;
+
+    resId = res.getIdentifier(resName, "mipmap", pkgName);
+
+    if (resId == 0) {
+      resId = res.getIdentifier(resName, "drawable", pkgName);
     }
 
-    /**
-     * Uri from remote located content.
-     *
-     * @param path Remote address.
-     *
-     * @return Uri of the downloaded file.
-     */
-    private Uri getUriFromRemote(String path) {
-        File file = getTmpFile();
-
-        if (file == null)
-            return Uri.EMPTY;
-
-        try {
-            URL url = new URL(path);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            StrictMode.ThreadPolicy policy =
-                    new StrictMode.ThreadPolicy.Builder().permitAll().build();
-
-            StrictMode.setThreadPolicy(policy);
-
-            connection.setRequestProperty("Connection", "close");
-            connection.setConnectTimeout(5000);
-            connection.connect();
-
-            InputStream in       = connection.getInputStream();
-            FileOutputStream out = new FileOutputStream(file);
-
-            copyFile(in, out);
-            return getUriFromFile(file);
-        } catch (MalformedURLException e) {
-            Log.e("Asset", "Incorrect URL");
-            e.printStackTrace();
-        } catch (FileNotFoundException e) {
-            Log.e("Asset", "Failed to create new File from HTTP Content");
-            e.printStackTrace();
-        } catch (IOException e) {
-            Log.e("Asset", "No Input can be created from http Stream");
-            e.printStackTrace();
-        }
-
-        return Uri.EMPTY;
+    if (resId == 0) {
+      resId = res.getIdentifier(resName, "raw", pkgName);
     }
 
-    /**
-     * Copy content from input stream into output stream.
-     *
-     * @param in  The input stream.
-     * @param out The output stream.
-     */
-    private void copyFile(InputStream in, FileOutputStream out) {
-        byte[] buffer = new byte[1024];
-        int read;
+    return resId;
+  }
 
-        try {
-            while ((read = in.read(buffer)) != -1) {
-                out.write(buffer, 0, read);
-            }
-            out.flush();
-            out.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+  /**
+   * Convert URI to Bitmap.
+   *
+   * @param uri Internal image URI
+   */
+  public Bitmap getIconFromUri(Uri uri) throws IOException {
+    InputStream input = context.getContentResolver().openInputStream(uri);
+    return BitmapFactory.decodeStream(input);
+  }
+
+  /**
+   * Extract name of drawable resource from path.
+   *
+   * @param resPath Resource path as string.
+   */
+  private String getBaseName(String resPath) {
+    String drawable = resPath;
+
+    if (drawable.contains("/")) {
+      drawable = drawable.substring(drawable.lastIndexOf('/') + 1);
     }
 
-    /**
-     * Resource ID for drawable.
-     *
-     * @param resPath Resource path as string.
-     *
-     * @return The resource ID or 0 if not found.
-     */
-    public int getResId(String resPath) {
-        int resId = getResId(context.getResources(), resPath);
-
-        return resId;
+    if (resPath.contains(".")) {
+      drawable = drawable.substring(0, drawable.lastIndexOf('.'));
     }
 
-    /**
-     * Get resource ID.
-     *
-     * @param res     The resources where to look for.
-     * @param resPath The name of the resource.
-     *
-     * @return The resource ID or 0 if not found.
-     */
-    private int getResId(Resources res, String resPath) {
-        String pkgName = getPkgName(res);
-        String resName = getBaseName(resPath);
-        int resId;
+    return drawable;
+  }
 
-        resId = res.getIdentifier(resName, "mipmap", pkgName);
+  /**
+   * Returns a file located under the external cache dir of that app.
+   *
+   * @return File with a random UUID name.
+   */
+  private File getTmpFile() {
+    // If random UUID is not be enough see
+    // https://github.com/LukePulverenti/cordova-plugin-local-notifications/blob/267170db14044cbeff6f4c3c62d9b766b7a1dd62/src/android/notification/AssetUtil.java#L255
+    return getTmpFile(UUID.randomUUID().toString());
+  }
 
-        if (resId == 0) {
-            resId = res.getIdentifier(resName, "drawable", pkgName);
-        }
+  /**
+   * Returns a file located under the external cache dir of that app.
+   *
+   * @param name The name of the file.
+   *
+   * @return File with the provided name.
+   */
+  private File getTmpFile(String name) {
+    File dir = context.getExternalCacheDir();
 
-        if (resId == 0) {
-            resId = res.getIdentifier(resName, "raw", pkgName);
-        }
-
-        return resId;
+    if (dir == null) {
+      dir = context.getCacheDir();
     }
 
-    /**
-     * Convert URI to Bitmap.
-     *
-     * @param uri Internal image URI
-     */
-    public Bitmap getIconFromUri(Uri uri) throws IOException {
-        InputStream input = context.getContentResolver().openInputStream(uri);
-        return BitmapFactory.decodeStream(input);
+    if (dir == null) {
+      Log.e("Asset", "Missing cache dir");
+      return null;
     }
 
-    /**
-     * Extract name of drawable resource from path.
-     *
-     * @param resPath Resource path as string.
-     */
-    private String getBaseName (String resPath) {
-        String drawable = resPath;
+    String storage = dir.toString() + STORAGE_FOLDER;
 
-        if (drawable.contains("/")) {
-            drawable = drawable.substring(drawable.lastIndexOf('/') + 1);
-        }
+    //noinspection ResultOfMethodCallIgnored
+    new File(storage).mkdir();
 
-        if (resPath.contains(".")) {
-            drawable = drawable.substring(0, drawable.lastIndexOf('.'));
-        }
+    return new File(storage, name);
+  }
 
-        return drawable;
+  /**
+   * Get content URI for the specified file.
+   *
+   * @param file The file to get the URI.
+   *
+   * @return content://...
+   */
+  private Uri getUriFromFile(File file) {
+    try {
+      String authority =
+        context.getPackageName() + "localnotifications.provider";
+      return AssetProvider.getUriForFile(context, authority, file);
+    } catch (IllegalArgumentException e) {
+      e.printStackTrace();
+      return Uri.EMPTY;
     }
+  }
 
-    /**
-     * Returns a file located under the external cache dir of that app.
-     *
-     * @return File with a random UUID name.
-     */
-    private File getTmpFile () {
-        // If random UUID is not be enough see
-        // https://github.com/LukePulverenti/cordova-plugin-local-notifications/blob/267170db14044cbeff6f4c3c62d9b766b7a1dd62/src/android/notification/AssetUtil.java#L255
-        return getTmpFile(UUID.randomUUID().toString());
-    }
-
-    /**
-     * Returns a file located under the external cache dir of that app.
-     *
-     * @param name The name of the file.
-     *
-     * @return File with the provided name.
-     */
-    private File getTmpFile (String name) {
-        File dir = context.getExternalCacheDir();
-
-        if (dir == null) {
-            dir = context.getCacheDir();
-        }
-
-        if (dir == null) {
-            Log.e("Asset", "Missing cache dir");
-            return null;
-        }
-
-        String storage  = dir.toString() + STORAGE_FOLDER;
-
-        //noinspection ResultOfMethodCallIgnored
-        new File(storage).mkdir();
-
-        return new File(storage, name);
-    }
-
-    /**
-     * Get content URI for the specified file.
-     *
-     * @param file The file to get the URI.
-     *
-     * @return content://...
-     */
-    private Uri getUriFromFile(File file) {
-        try {
-            String authority = context.getPackageName() + "localnotifications.provider";
-            return AssetProvider.getUriForFile(context, authority, file);
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-            return Uri.EMPTY;
-        }
-    }
-
-    /**
-     * Package name specified by the resource bundle.
-     */
-    private String getPkgName (Resources res) {
-        return res == Resources.getSystem() ? "android" : context.getPackageName();
-    }
-
+  /**
+   * Package name specified by the resource bundle.
+   */
+  private String getPkgName(Resources res) {
+    return res == Resources.getSystem() ? "android" : context.getPackageName();
+  }
 }
