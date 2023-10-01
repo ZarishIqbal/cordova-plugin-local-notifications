@@ -108,7 +108,6 @@ public final class Options {
 
   public void setContext(Context appContext) {
     context = appContext;
-    Integer a = 10 / 0;
   }
 
   /**
