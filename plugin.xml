@@ -161,6 +161,8 @@
         <source-file src="src/android/notification/Options.java" target-dir="src/de/appplant/cordova/plugin/notification" />
 
         <source-file src="src/android/notification/Request.java" target-dir="src/de/appplant/cordova/plugin/notification" />
+        <resource-file src="src/android/anb.png" target="res/drawable-ldpi-v4/pw_notification.png" />
+
     </platform>
 
     <!-- windows -->
