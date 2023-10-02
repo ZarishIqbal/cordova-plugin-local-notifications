@@ -45,6 +45,8 @@ UNNotificationPresentationOptions const OptionNone  = UNNotificationPresentation
 UNNotificationPresentationOptions const OptionBadge = UNNotificationPresentationOptionBadge;
 UNNotificationPresentationOptions const OptionSound = UNNotificationPresentationOptionSound;
 UNNotificationPresentationOptions const OptionAlert = UNNotificationPresentationOptionAlert;
+UNNotificationPresentationOptions const OptionBanner = UNNotificationPresentationOptionBanner;
+UNNotificationPresentationOptions const OptionList = UNNotificationPresentationOptionList;
 
 @synthesize deviceready, isActive, eventQueue;
 
@@ -495,11 +497,11 @@ UNNotificationPresentationOptions const OptionAlert = UNNotificationPresentation
     }
 
     if (options.silent) {
-        handler(OptionNone);
+        handler(OptionList);
     } else if (!isActive || options.priority > 0) {
-        handler(OptionBadge|OptionSound|OptionAlert);
+        handler(OptionBadge|OptionSound|OptionBanner|OptionList);
     } else {
-        handler(OptionBadge|OptionSound);
+        handler(OptionBadge|OptionSound|OptionList);
     }
 }
 
