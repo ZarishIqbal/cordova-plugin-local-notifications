@@ -207,7 +207,7 @@ public class LocalNotification extends CordovaPlugin {
    *                JavaScript.
    */
   private void check(CallbackContext command) {
-    boolean allowed = getNotMgr().hasPermission();
+    boolean allowed = getNotComptMgr().hasPermission();
     success(command, allowed);
   }
 
@@ -218,7 +218,16 @@ public class LocalNotification extends CordovaPlugin {
    *                JavaScript.
    */
   private void request(CallbackContext command) {
-    check(command);
+    getNotComptMgr()
+      .requestPermission()
+      .then(
+        new CallbackContext.CallbackContextContinuation<Boolean>() {
+          @Override
+          public void onComplete(Boolean allowed) {
+            success(command, allowed);
+          }
+        }
+      );
   }
 
   /**
@@ -632,6 +641,10 @@ public class LocalNotification extends CordovaPlugin {
    */
   private Manager getNotMgr() {
     return Manager.getInstance(cordova.getActivity());
+  }
+
+  private NotificationManagerCompat getNotComptMgr() {
+    return Manager.getInstance(cordova.getActivity()).getNotCompMgr();
   }
 }
 // codebeat:enable[TOO_MANY_FUNCTIONS]
