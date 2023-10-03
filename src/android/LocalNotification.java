@@ -30,6 +30,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.KeyguardManager;
 import android.content.Context;
+import android.support.v4.app.NotificationManagerCompat;
 import android.util.Pair;
 import android.view.View;
 import de.appplant.cordova.plugin.notification.Manager;
