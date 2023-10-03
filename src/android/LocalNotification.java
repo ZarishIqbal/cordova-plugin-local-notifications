@@ -218,16 +218,8 @@ public class LocalNotification extends CordovaPlugin {
    *                JavaScript.
    */
   private void request(CallbackContext command) {
-    getNotComptMgr()
-      .requestPermission()
-      .then(
-        new CallbackContext.CallbackContextContinuation<Boolean>() {
-          @Override
-          public void onComplete(Boolean allowed) {
-            success(command, allowed);
-          }
-        }
-      );
+    boolean allowed = getNotComptMgr().requestPermission();
+    success(command, allowed);
   }
 
   /**
