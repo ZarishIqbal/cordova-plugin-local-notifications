@@ -208,7 +208,7 @@ public class LocalNotification extends CordovaPlugin {
    *                JavaScript.
    */
   private void check(CallbackContext command) {
-    boolean allowed = getNotComptMgr().hasPermission();
+    boolean allowed = getNotMgr().hasPermission();
     success(command, allowed);
   }
 
@@ -219,8 +219,7 @@ public class LocalNotification extends CordovaPlugin {
    *                JavaScript.
    */
   private void request(CallbackContext command) {
-    boolean allowed = getNotComptMgr().requestPermission();
-    success(command, allowed);
+    getNotMgr().requestPermission();
   }
 
   /**
