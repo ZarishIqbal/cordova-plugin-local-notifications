@@ -31,12 +31,16 @@ import static de.appplant.cordova.plugin.notification.Notification.PREF_KEY_ID;
 import static de.appplant.cordova.plugin.notification.Notification.Type.TRIGGERED;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.service.notification.StatusBarNotification;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationManagerCompat;
+import android.support.v4.content.ContextCompat;
 import de.appplant.cordova.plugin.badge.BadgeImpl;
 import java.util.ArrayList;
 import java.util.List;
@@ -67,7 +71,26 @@ public final class Manager {
    */
   private Manager(Context context) {
     this.context = context;
-    createDefaultChannel();
+    int targetSdkVersion = context.getApplicationInfo().targetSdkVersion;
+    if (targetSdkVersion < 33) {
+      createDefaultChannel();
+    } else {
+      if (
+        ContextCompat.checkSelfPermission(
+          context,
+          "android.permission.POST_NOTIFICATIONS"
+        ) !=
+        PackageManager.PERMISSION_GRANTED
+      ) {
+        ActivityCompat.requestPermissions(
+          (Activity) context,
+          new String[] { "android.permission.POST_NOTIFICATIONS" },
+          89
+        );
+      } else {
+        createDefaultChannel();
+      }
+    }
   }
 
   /**
