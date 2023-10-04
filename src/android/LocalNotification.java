@@ -30,7 +30,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.KeyguardManager;
 import android.content.Context;
-import android.support.v4.app.NotificationManagerCompat;
 import android.util.Pair;
 import android.view.View;
 import de.appplant.cordova.plugin.notification.Manager;
@@ -219,7 +218,7 @@ public class LocalNotification extends CordovaPlugin {
    *                JavaScript.
    */
   private void request(CallbackContext command) {
-    getNotMgr().requestPermission();
+    check(command);
   }
 
   /**
@@ -633,10 +632,6 @@ public class LocalNotification extends CordovaPlugin {
    */
   private Manager getNotMgr() {
     return Manager.getInstance(cordova.getActivity());
-  }
-
-  private NotificationManagerCompat getNotComptMgr() {
-    return Manager.getInstance(cordova.getActivity()).getNotCompMgr();
   }
 }
 // codebeat:enable[TOO_MANY_FUNCTIONS]

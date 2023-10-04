@@ -31,11 +31,9 @@ import static de.appplant.cordova.plugin.notification.Notification.PREF_KEY_ID;
 import static de.appplant.cordova.plugin.notification.Notification.Type.TRIGGERED;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.service.notification.StatusBarNotification;
 import android.support.v4.app.NotificationManagerCompat;
@@ -88,40 +86,7 @@ public final class Manager {
     return getNotCompMgr().areNotificationsEnabled();
   }
 
-  /**
-   * Check if app has local notification permission.
-   */
-  public boolean requestPermission() {
-    AlertDialog.Builder builder = new AlertDialog.Builder(this);
-    builder.setTitle("Notification Permission Required");
-    builder.setMessage(
-      "To receive notifications, please enable notification access for this app."
-    );
-    builder.setPositiveButton(
-      "Open Settings",
-      new DialogInterface.OnClickListener() {
-        @Override
-        public void onClick(DialogInterface dialog, int which) {
-          // Open the app's notification settings in the system settings
-          Intent intent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
-          intent.putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName());
-          startActivity(intent);
-        }
-      }
-    );
-    builder.setNegativeButton(
-      "Cancel",
-      new DialogInterface.OnClickListener() {
-        @Override
-        public void onClick(DialogInterface dialog, int which) {
-          // Handle the case where the user declines permission
-        }
-      }
-    );
-    builder.show();
-  }
-
-  /**
+  /*
    * Schedule local notification specified by request.
    *
    * @param request Set of notification options.
@@ -435,7 +400,7 @@ public final class Manager {
   /**
    * Notification compat manager for the application.
    */
-  public NotificationManagerCompat getNotCompMgr() {
+  private NotificationManagerCompat getNotCompMgr() {
     return NotificationManagerCompat.from(context);
   }
 }
