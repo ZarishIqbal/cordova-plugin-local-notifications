@@ -31,6 +31,7 @@ import static de.appplant.cordova.plugin.notification.Notification.PREF_KEY_ID;
 import static de.appplant.cordova.plugin.notification.Notification.Type.TRIGGERED;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
