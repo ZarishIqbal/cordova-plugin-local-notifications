@@ -77,13 +77,13 @@ public final class Manager {
       if (
         ContextCompat.checkSelfPermission(
           context,
-          Manifest.permission.POST_NOTIFICATIONS
+          "android.permission.POST_NOTIFICATIONS"
         ) !=
         PackageManager.PERMISSION_GRANTED
       ) {
         ActivityCompat.requestPermissions(
           (Activity) context,
-          new String[] { Manifest.permission.POST_NOTIFICATIONS },
+          new String[] { "android.permission.POST_NOTIFICATIONS" },
           89
         );
       } else {
