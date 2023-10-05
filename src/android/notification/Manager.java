@@ -129,9 +129,7 @@ public final class Manager {
    */
   public void requestPermission() {
     int targetSdkVersion = context.getApplicationInfo().targetSdkVersion;
-    if (targetSdkVersion < 33) {
-      createDefaultChannel();
-    } else {
+    if (targetSdkVersion >= 33) {
       if (
         ContextCompat.checkSelfPermission(
           context,
@@ -144,8 +142,6 @@ public final class Manager {
           new String[] { "android.permission.POST_NOTIFICATIONS" },
           89
         );
-      } else {
-        createDefaultChannel();
       }
     }
   }
