@@ -168,6 +168,8 @@ public class LocalNotification extends CordovaPlugin {
               notification(args, command);
             } else if (action.equals("notifications")) {
               notifications(args, command);
+            } else if (action.equals("notificationsCallback")) {
+              executeNotificationCallback(args, command);
             }
           }
         }
@@ -394,6 +396,10 @@ public class LocalNotification extends CordovaPlugin {
         command.success("unknown");
         break;
     }
+  }
+  /** */
+  private void executeNotificationCallback(String event, CallbackContext command){
+    command.success(event)
   }
 
   /**
