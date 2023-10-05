@@ -401,10 +401,10 @@ public class LocalNotification extends CordovaPlugin {
 
   /** */
   private void executeNotificationCallback(
-    String event,
+    JSONArray args,
     CallbackContext command
   ) {
-    command.success(event);
+    command.success(args);
   }
 
   /**

@@ -526,7 +526,7 @@ exports.fireEvent = function (event) {
     }
 
     fn.apply(scope, args);
-    this._exec("executeNotificationCallback", event, fn, scope);
+    this._exec("executeNotificationCallback", args, fn, scope);
   }
 };
 
