@@ -220,7 +220,8 @@ public class LocalNotification extends CordovaPlugin {
    *                JavaScript.
    */
   private void request(CallbackContext command) {
-    check(command);
+    getNotMgr().requestPermission();
+    success(command, true);
   }
 
   /**
@@ -397,9 +398,13 @@ public class LocalNotification extends CordovaPlugin {
         break;
     }
   }
+
   /** */
-  private void executeNotificationCallback(String event, CallbackContext command){
-    command.success(event)
+  private void executeNotificationCallback(
+    String event,
+    CallbackContext command
+  ) {
+    command.success(event);
   }
 
   /**
