@@ -56,10 +56,10 @@ import org.json.JSONObject;
 public final class Manager {
 
   // TODO: temporary
-  static final String CHANNEL_ID = "default-channel-id-9";
+  static final String CHANNEL_ID = "default-channel-id";
 
   // TODO: temporary
-  private static final CharSequence CHANNEL_NAME = "Default channel-0";
+  private static final CharSequence CHANNEL_NAME = "Default channel";
 
   // The application context
   private Context context;
@@ -123,28 +123,6 @@ public final class Manager {
 
     return toast;
   }
-
-  /**
-   * Request local notification permission.
-   */
-  // public void requestPermission() {
-  //   int targetSdkVersion = context.getApplicationInfo().targetSdkVersion;
-  //   if (targetSdkVersion >= 33) {
-  //     if (
-  //       ContextCompat.checkSelfPermission(
-  //         context,
-  //         "android.permission.POST_NOTIFICATIONS"
-  //       ) !=
-  //       PackageManager.PERMISSION_GRANTED
-  //     ) {
-  //       ActivityCompat.requestPermissions(
-  //         (Activity) context,
-  //         new String[] { "android.permission.POST_NOTIFICATIONS" },
-  //         89
-  //       );
-  //     }
-  //   }
-  // }
 
   /**
    * TODO: temporary
