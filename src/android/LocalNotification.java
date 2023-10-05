@@ -220,8 +220,7 @@ public class LocalNotification extends CordovaPlugin {
    *                JavaScript.
    */
   private void request(CallbackContext command) {
-    getNotMgr().requestPermission();
-    success(command, true);
+    check(command);
   }
 
   /**

@@ -127,24 +127,24 @@ public final class Manager {
   /**
    * Request local notification permission.
    */
-  public void requestPermission() {
-    int targetSdkVersion = context.getApplicationInfo().targetSdkVersion;
-    if (targetSdkVersion >= 33) {
-      if (
-        ContextCompat.checkSelfPermission(
-          context,
-          "android.permission.POST_NOTIFICATIONS"
-        ) !=
-        PackageManager.PERMISSION_GRANTED
-      ) {
-        ActivityCompat.requestPermissions(
-          (Activity) context,
-          new String[] { "android.permission.POST_NOTIFICATIONS" },
-          89
-        );
-      }
-    }
-  }
+  // public void requestPermission() {
+  //   int targetSdkVersion = context.getApplicationInfo().targetSdkVersion;
+  //   if (targetSdkVersion >= 33) {
+  //     if (
+  //       ContextCompat.checkSelfPermission(
+  //         context,
+  //         "android.permission.POST_NOTIFICATIONS"
+  //       ) !=
+  //       PackageManager.PERMISSION_GRANTED
+  //     ) {
+  //       ActivityCompat.requestPermissions(
+  //         (Activity) context,
+  //         new String[] { "android.permission.POST_NOTIFICATIONS" },
+  //         89
+  //       );
+  //     }
+  //   }
+  // }
 
   /**
    * TODO: temporary
