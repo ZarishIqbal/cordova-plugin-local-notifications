@@ -56,10 +56,10 @@ import org.json.JSONObject;
 public final class Manager {
 
   // TODO: temporary
-  static final String CHANNEL_ID = "default-channel-id";
+  static final String CHANNEL_ID = "default-channel-id-9";
 
   // TODO: temporary
-  private static final CharSequence CHANNEL_NAME = "Default channel";
+  private static final CharSequence CHANNEL_NAME = "Default channel-0";
 
   // The application context
   private Context context;
